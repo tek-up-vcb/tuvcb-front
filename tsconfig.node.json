@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "composite": true,
+    "allowJs": true,
+    "types": ["node"]
+  },
+  "include": ["vite.config.js"]
+}
