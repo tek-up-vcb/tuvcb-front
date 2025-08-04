@@ -1,13 +1,14 @@
 import Header from '@/components/Header'
 import { Button } from '@/components/ui/button'
 import { ArrowRight, Check, File, GraduationCap, Lock } from 'lucide-react'
+import heroImg from '@/assets/hero.png'
 
 export default function HomePage() {
   return (
     <div className="flex min-h-screen flex-col font-sans">
       <Header />
-      <main className="flex flex-1 flex-col">
-        <section className="container mx-auto flex flex-col items-center gap-12 px-4 py-20 md:flex-row">
+      <main className="flex flex-1 flex-col items-center">
+        <section className="flex w-full max-w-5xl flex-col items-center gap-12 px-4 py-20 md:flex-row">
           <div className="flex flex-1 flex-col items-center gap-6 text-center md:items-start md:text-left">
             <h1 className="text-5xl font-bold text-slate-800 md:text-6xl">
               TEK-UP Digital Credentials
@@ -24,25 +25,15 @@ export default function HomePage() {
             </div>
           </div>
           <div className="relative flex flex-1 justify-center">
-            <div className="relative w-60 rotate-6 rounded-3xl bg-white p-6 shadow-lg">
-              <div className="flex h-full flex-col items-center justify-center gap-4">
-                <span className="text-sm font-semibold text-green-600">
-                  Certification Validated
-                </span>
-                <span className="text-xl font-bold">TEK-UP</span>
-                <span className="text-4xl">🎉</span>
-              </div>
-            </div>
-            <div className="absolute -left-24 top-1/2 flex -rotate-12 items-center">
-              <ArrowRight className="h-8 w-8" />
-              <span className="ml-2 font-medium italic">
-                Keep your diplomas safe and secure !
-              </span>
-            </div>
+            <img
+              src={heroImg}
+              alt="Phone showing verified credential"
+              className="w-60 rotate-6"
+            />
           </div>
         </section>
-        <hr className="border-t" />
-        <section className="container mx-auto px-4 py-16 text-center">
+        <hr className="w-full max-w-5xl border-t" />
+        <section className="w-full max-w-5xl px-4 py-16 text-center">
           <h2 className="flex items-center justify-center gap-2 text-3xl font-semibold text-slate-800">
             <GraduationCap className="h-8 w-8 text-blue-700" />
             Certify, Trust, and Showcase with Blockchain Power
@@ -53,8 +44,8 @@ export default function HomePage() {
             tamper-proof, and instantly verifiable worldwide.
           </p>
         </section>
-        <section className="bg-indigo-100 py-16">
-          <div className="container mx-auto flex flex-col gap-8 px-4 md:flex-row">
+        <section className="w-full bg-indigo-100 py-16">
+          <div className="mx-auto flex w-full max-w-5xl flex-col gap-8 px-4 md:flex-row">
             <div className="flex-1 space-y-4">
               <h3 className="text-2xl font-bold">What Is It?</h3>
               <ul className="space-y-2">
