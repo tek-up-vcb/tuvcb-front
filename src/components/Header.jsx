@@ -35,16 +35,16 @@ function Header() {
                 <ul className="grid w-40 gap-2">
                   <li>
                     <NavigationMenuLink asChild>
-                      <a href="#" className="block rounded-md p-2 hover:bg-accent">
+                      <Link to="/login" className="block rounded-md p-2 hover:bg-accent">
                         Students
-                      </a>
+                      </Link>
                     </NavigationMenuLink>
                   </li>
                   <li>
                     <NavigationMenuLink asChild>
-                      <a href="#" className="block rounded-md p-2 hover:bg-accent">
+                      <Link to="/login" className="block rounded-md p-2 hover:bg-accent">
                         Teachers
-                      </a>
+                      </Link>
                     </NavigationMenuLink>
                   </li>
                 </ul>
@@ -72,3 +72,5 @@ function Header() {
 }
 
 export default Header
+
+

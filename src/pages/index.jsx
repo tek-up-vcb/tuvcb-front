@@ -2,6 +2,7 @@ import Header from '@/components/Header'
 import { Button } from '@/components/ui/button'
 import { ArrowRight, Check, File, GraduationCap, Lock } from 'lucide-react'
 import heroImg from '@/assets/hero.png'
+import { Link } from 'react-router-dom'
 
 export default function HomePage() {
   return (
@@ -18,8 +19,8 @@ export default function HomePage() {
               certifications.
             </p>
             <div className="flex gap-4">
-              <Button className="bg-blue-700 text-white hover:bg-blue-800">
-                Connect Wallet
+              <Button asChild className="bg-blue-700 text-white hover:bg-blue-800">
+                <Link to="/login">Connect Wallet</Link>
               </Button>
               <Button variant="outline">How It Works</Button>
             </div>

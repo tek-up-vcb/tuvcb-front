@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import { Phone } from 'lucide-react'
+import { Phone, ArrowLeft } from 'lucide-react'
 import logo from '@/assets/logo.png'
 import metamaskLogo from '@/assets/metamask.png'
 import { useCallback } from 'react'
@@ -20,7 +20,13 @@ export default function LoginPage() {
   }, [])
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-white px-4">
+    <div className="relative flex min-h-screen flex-col items-center justify-center bg-white px-4">
+      <Link
+        to="/"
+        className="absolute left-4 top-4 text-gray-600 hover:text-gray-800"
+      >
+        <ArrowLeft className="h-6 w-6" />
+      </Link>
       <div className="flex w-full max-w-sm flex-col items-center gap-8 text-center">
         <img src={logo} alt="TEK-UP University" className="h-16 w-auto" />
         <div className="w-full space-y-6">
