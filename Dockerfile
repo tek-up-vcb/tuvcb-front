@@ -7,7 +7,7 @@ RUN npm install
 
 COPY . .
 
-ENV SERVICE_NAME=frontend
+ENV SERVICE_NAME=tuvcb-front
 
 EXPOSE 5173
 CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "5173"]
