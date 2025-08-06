@@ -7,9 +7,18 @@ import {
   NavigationMenuContent,
   NavigationMenuLink,
 } from '@/components/ui/navigation-menu'
+import { Button } from '@/components/ui/button'
+import { LogOut, User } from 'lucide-react'
+import { useAuth } from '@/hooks/useAuth'
 import logo from '@/assets/logo.png'
 
 function Header() {
+  const { isAuthenticated, user, logout } = useAuth()
+
+  const handleLogout = async () => {
+    await logout()
+  }
+
   return (
     <header className="py-4">
       <div className="mx-auto flex w-full max-w-5xl items-center justify-between px-4">
@@ -66,6 +75,35 @@ function Header() {
             </NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>
+        
+        <div className="flex items-center gap-4">
+          {isAuthenticated ? (
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 text-sm">
+                <User className="h-4 w-4" />
+                <span className="font-medium">
+                  {user?.walletAddress ? 
+                    `${user.walletAddress.slice(0, 6)}...${user.walletAddress.slice(-4)}` : 
+                    'Connected'
+                  }
+                </span>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleLogout}
+                className="flex items-center gap-2"
+              >
+                <LogOut className="h-4 w-4" />
+                Logout
+              </Button>
+            </div>
+          ) : (
+            <Button asChild>
+              <Link to="/login">Login</Link>
+            </Button>
+          )}
+        </div>
       </div>
     </header>
   )
