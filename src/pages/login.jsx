@@ -5,12 +5,20 @@ import { Phone, ArrowLeft } from 'lucide-react'
 import logo from '@/assets/logo.png'
 import metamaskLogo from '@/assets/metamask.png'
 import { useCallback } from 'react'
+import { getNonce } from '@/lib/authService'
 
 export default function LoginPage() {
   const handleLogin = useCallback(async () => {
     if (window?.ethereum) {
       try {
-        await window.ethereum.request({ method: 'eth_requestAccounts' })
+        const [address] = await window.ethereum.request({
+          method: 'eth_requestAccounts',
+        })
+        try {
+          await getNonce(address)
+        } catch (err) {
+          console.error('Erreur lors de la récupération du nonce', err)
+        }
       } catch (err) {
         console.error('Metamask connection failed', err)
       }
