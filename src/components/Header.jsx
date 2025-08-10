@@ -35,14 +35,14 @@ function Header() {
                 <ul className="grid w-40 gap-2">
                   <li>
                     <NavigationMenuLink asChild>
-                      <Link to="/login" className="block rounded-md p-2 hover:bg-accent">
+                      <Link to="/login" className="block rounded-md p-2 hover:bg-accent border-0">
                         Students
                       </Link>
                     </NavigationMenuLink>
                   </li>
                   <li>
                     <NavigationMenuLink asChild>
-                      <Link to="/login" className="block rounded-md p-2 hover:bg-accent">
+                      <Link to="/login" className="block rounded-md p-2 hover:bg-accent border-0">
                         Teachers
                       </Link>
                     </NavigationMenuLink>

@@ -21,7 +21,7 @@ export default function Dashboard() {
         const profile = await AuthService.getProfile()
         setUser(profile)
       } catch (error) {
-        console.error('Erreur lors de la récupération du profil:', error)
+        console.error('Error retrieving profile:', error)
         AuthService.logout()
         navigate('/login')
       } finally {
@@ -46,92 +46,92 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
           <div className="flex justify-between items-center">
             <div>
               <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-              <p className="mt-2 text-gray-600">Bienvenue dans votre espace sécurisé</p>
+              <p className="mt-2 text-gray-600">Welcome to your secure space</p>
             </div>
-            <Button onClick={handleLogout} variant="outline">
-              Déconnexion
+            <Button onClick={handleLogout} variant="outline" className="border-0 shadow-sm">
+              Logout
             </Button>
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* Informations utilisateur */}
-          <Card>
+          {/* User Information */}
+          <Card className="border-0 shadow-sm">
             <CardHeader>
-              <CardTitle>Profil Utilisateur</CardTitle>
-              <CardDescription>Informations de votre wallet</CardDescription>
+              <CardTitle>User Profile</CardTitle>
+              <CardDescription>Your wallet information</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
-                <p className="text-sm font-medium text-gray-500">Adresse Wallet:</p>
-                <p className="text-sm font-mono bg-gray-100 p-2 rounded break-all">
+                <p className="text-sm font-medium text-gray-500">Wallet Address:</p>
+                <p className="text-sm font-mono bg-gray-100 p-2 rounded break-all border-0">
                   {user?.address || AuthService.getUserAddress()}
                 </p>
-                <p className="text-sm font-medium text-gray-500 mt-4">Statut:</p>
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                  Authentifié ✓
+                <p className="text-sm font-medium text-gray-500 mt-4">Status:</p>
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 border-0">
+                  Authenticated ✓
                 </span>
               </div>
             </CardContent>
           </Card>
 
-          {/* Fonctionnalités */}
-          <Card>
+          {/* Features */}
+          <Card className="border-0 shadow-sm">
             <CardHeader>
-              <CardTitle>Fonctionnalités</CardTitle>
-              <CardDescription>Actions disponibles</CardDescription>
+              <CardTitle>Features</CardTitle>
+              <CardDescription>Available actions</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
                 <Button 
-                  className="w-full" 
+                  className="w-full border-0 shadow-sm" 
                   variant="outline"
                   onClick={() => navigate('/manage-users')}
                 >
                   <Users className="h-4 w-4 mr-2" />
-                  Gérer les utilisateurs
+                  Manage Users
                 </Button>
                 <Button 
-                  className="w-full" 
+                  className="w-full border-0 shadow-sm" 
                   variant="outline"
                   onClick={() => navigate('/manage-students')}
                 >
                   <GraduationCap className="h-4 w-4 mr-2" />
-                  Gérer les étudiants
+                  Manage Students
                 </Button>
-                <Button className="w-full" variant="outline">
-                  Consulter les transactions
+                <Button className="w-full border-0 shadow-sm" variant="outline">
+                  View Transactions
                 </Button>
-                <Button className="w-full" variant="outline">
-                  Gérer le profil
+                <Button className="w-full border-0 shadow-sm" variant="outline">
+                  Manage Profile
                 </Button>
-                <Button className="w-full" variant="outline">
-                  Paramètres
+                <Button className="w-full border-0 shadow-sm" variant="outline">
+                  Settings
                 </Button>
               </div>
             </CardContent>
           </Card>
 
-          {/* Statistiques */}
-          <Card>
+          {/* Statistics */}
+          <Card className="border-0 shadow-sm">
             <CardHeader>
-              <CardTitle>Statistiques</CardTitle>
-              <CardDescription>Données de la session</CardDescription>
+              <CardTitle>Statistics</CardTitle>
+              <CardDescription>Session data</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Dernière connexion:</p>
-                  <p className="text-sm">{new Date().toLocaleString('fr-FR')}</p>
+                  <p className="text-sm font-medium text-gray-500">Last connection:</p>
+                  <p className="text-sm">{new Date().toLocaleString('en-US')}</p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Méthode d'auth:</p>
+                  <p className="text-sm font-medium text-gray-500">Auth method:</p>
                   <p className="text-sm">MetaMask</p>
                 </div>
                 <div>
@@ -143,30 +143,30 @@ export default function Dashboard() {
           </Card>
         </div>
 
-        {/* Zone de contenu principal */}
-        <Card className="mt-8">
+        {/* Main content area */}
+        <Card className="mt-8 border-0 shadow-sm">
           <CardHeader>
-            <CardTitle>Zone Protégée</CardTitle>
+            <CardTitle>Protected Area</CardTitle>
             <CardDescription>
-              Contenu accessible uniquement aux utilisateurs authentifiés avec MetaMask
+              Content accessible only to users authenticated with MetaMask
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="text-center py-12">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                🎉 Félicitations ! 
+                🎉 Congratulations! 
               </h3>
               <p className="text-gray-600 mb-6">
-                Vous êtes maintenant connecté avec succès via MetaMask.<br/>
-                Cette zone est protégée et nécessite une authentification valide.
+                You are now successfully connected via MetaMask.<br/>
+                This area is protected and requires valid authentication.
               </p>
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 max-w-2xl mx-auto">
-                <h4 className="font-medium text-blue-900 mb-2">Informations techniques:</h4>
+              <div className="bg-blue-50 border-0 shadow-sm rounded-lg p-4 max-w-2xl mx-auto">
+                <h4 className="font-medium text-blue-900 mb-2">Technical information:</h4>
                 <ul className="text-sm text-blue-800 space-y-1 text-left">
-                  <li>• Authentification basée sur la signature de message</li>
-                  <li>• Token JWT sécurisé</li>
-                  <li>• Session protégée par Traefik</li>
-                  <li>• Backend NestJS avec validation ethers.js</li>
+                  <li>• Message signature-based authentication</li>
+                  <li>• Secure JWT token</li>
+                  <li>• Session protected by Traefik</li>
+                  <li>• NestJS backend with ethers.js validation</li>
                 </ul>
               </div>
             </div>

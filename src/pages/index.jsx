@@ -29,7 +29,7 @@ export default function HomePage() {
             <div className="flex gap-4">
               <Button
                 asChild
-                className="bg-blue-700 text-white hover:bg-blue-800"
+                className="bg-blue-700 text-white hover:bg-blue-800 border-0 shadow-sm"
               >
                 {isAuthenticated ? (
                   <Link to="/dashboard">Go to Dashboard</Link>
@@ -37,7 +37,7 @@ export default function HomePage() {
                   <Link to="/login">Connect Wallet</Link>
                 )}
               </Button>
-              <Button variant="outline">How It Works</Button>
+              <Button variant="outline" className="border-0 shadow-sm">How It Works</Button>
             </div>
           </div>
           <div className="relative flex flex-1 justify-center">
@@ -48,7 +48,7 @@ export default function HomePage() {
             />
           </div>
         </section>
-        <hr className="w-full max-w-5xl border-t" />
+        <hr className="w-full max-w-5xl border-0 bg-gray-200 h-px" />
         <section className="w-full max-w-5xl px-4 py-16 text-center">
           <h2 className="flex items-center justify-center gap-2 text-3xl font-semibold text-slate-800">
             <GraduationCap className="h-8 w-8 text-blue-700" />
@@ -87,19 +87,19 @@ export default function HomePage() {
               </ul>
             </div>
             <div className="flex flex-1 flex-wrap justify-center gap-4 md:justify-end">
-              <div className="flex h-36 w-36 flex-col items-center justify-center rounded-lg bg-white text-slate-600 shadow">
+              <div className="flex h-36 w-36 flex-col items-center justify-center rounded-lg bg-white text-slate-600 shadow-sm border-0">
                 <Lock className="mb-2 h-8 w-8" />
                 <p className="text-center text-sm font-medium">
                   Powered by Blockchain
                 </p>
               </div>
-              <div className="flex h-36 w-36 flex-col items-center justify-center rounded-lg bg-slate-800 text-white shadow">
+              <div className="flex h-36 w-36 flex-col items-center justify-center rounded-lg bg-slate-800 text-white shadow-sm border-0">
                 <Check className="mb-2 h-8 w-8 text-green-400" />
                 <p className="text-center text-sm font-medium">
                   Validated by Experts
                 </p>
               </div>
-              <div className="flex h-36 w-36 flex-col items-center justify-center rounded-lg bg-slate-800 text-white shadow">
+              <div className="flex h-36 w-36 flex-col items-center justify-center rounded-lg bg-slate-800 text-white shadow-sm border-0">
                 <File className="mb-2 h-8 w-8 text-blue-300" />
                 <p className="text-center text-sm font-medium">
                   Stored on IPFS

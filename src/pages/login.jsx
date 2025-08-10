@@ -12,7 +12,7 @@ export default function LoginPage() {
   const [error, setError] = useState('')
   const navigate = useNavigate()
 
-  // Rediriger vers le dashboard si l'utilisateur est déjà connecté
+  // Redirect to dashboard if user is already logged in
   useEffect(() => {
     if (AuthService.isAuthenticated()) {
       navigate('/dashboard', { replace: true })
@@ -25,11 +25,11 @@ export default function LoginPage() {
 
     try {
       const result = await AuthService.authenticate()
-      console.log('Authentification réussie:', result)
+      console.log('Authentication successful:', result)
       navigate('/dashboard')
     } catch (error) {
-      console.error('Erreur d\'authentification:', error)
-      setError(error.message || 'Erreur lors de l\'authentification')
+      console.error('Authentication error:', error)
+      setError(error.message || 'Error during authentication')
     } finally {
       setIsLoading(false)
     }
@@ -54,7 +54,7 @@ export default function LoginPage() {
           </div>
 
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded text-sm">
+            <div className="bg-red-50 border-0 shadow-sm text-red-700 px-4 py-3 rounded text-sm">
               {error}
             </div>
           )}
@@ -62,19 +62,19 @@ export default function LoginPage() {
           <Button
             onClick={handleLogin}
             disabled={isLoading}
-            className="w-full bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
+            className="w-full bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 border-0 shadow-sm"
           >
             <img src={metamaskLogo} alt="Metamask" className="h-5 w-5" />
-            {isLoading ? 'Connexion en cours...' : 'Login via Metamask'}
+            {isLoading ? 'Connecting...' : 'Login via Metamask'}
           </Button>
           
           <div className="flex items-center gap-2">
-            <Separator className="flex-1" />
+            <Separator className="flex-1 border-0 bg-gray-200 h-px" />
             <span className="text-xs text-gray-400">OR</span>
-            <Separator className="flex-1" />
+            <Separator className="flex-1 border-0 bg-gray-200 h-px" />
           </div>
           
-          <Button variant="outline" className="w-full text-black">
+          <Button variant="outline" className="w-full text-black border-0 shadow-sm">
             <Phone className="h-4 w-4" />
             Contact us
           </Button>
