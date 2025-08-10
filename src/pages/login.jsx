@@ -4,13 +4,20 @@ import { Separator } from '@/components/ui/separator'
 import { Phone, ArrowLeft } from 'lucide-react'
 import logo from '@/assets/logo.png'
 import metamaskLogo from '@/assets/metamask.png'
-import { useCallback, useState } from 'react'
+import { useCallback, useState, useEffect } from 'react'
 import AuthService from '@/lib/authService'
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const navigate = useNavigate()
+
+  // Rediriger vers le dashboard si l'utilisateur est déjà connecté
+  useEffect(() => {
+    if (AuthService.isAuthenticated()) {
+      navigate('/dashboard', { replace: true })
+    }
+  }, [navigate])
 
   const handleLogin = useCallback(async () => {
     setIsLoading(true)

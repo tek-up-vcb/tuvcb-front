@@ -4,8 +4,15 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Check, File, GraduationCap, Lock } from "lucide-react";
 import heroImg from "@/assets/hero.png";
 import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import AuthService from "@/lib/authService";
 
 export default function HomePage() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+
+  useEffect(() => {
+    setIsAuthenticated(AuthService.isAuthenticated())
+  }, [])
   return (
     <div className="flex min-h-screen flex-col font-sans">
       <Header />
@@ -24,7 +31,11 @@ export default function HomePage() {
                 asChild
                 className="bg-blue-700 text-white hover:bg-blue-800"
               >
-                <Link to="/login">Connect Wallet</Link>
+                {isAuthenticated ? (
+                  <Link to="/dashboard">Go to Dashboard</Link>
+                ) : (
+                  <Link to="/login">Connect Wallet</Link>
+                )}
               </Button>
               <Button variant="outline">How It Works</Button>
             </div>
