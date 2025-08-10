@@ -40,7 +40,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Plus, GraduationCap, Pencil, Trash2, Filter, UserPlus, Users, RefreshCw, Edit3 } from 'lucide-react'
+import { Plus, GraduationCap, Pencil, Trash2, Filter, UserPlus, Users, RefreshCw, Edit3, Search, ChevronDown, ChevronUp } from 'lucide-react'
 import AuthService from '@/lib/authService'
 import studentsService from '@/services/studentsService'
 import promotionsService from '@/services/promotionsService'
@@ -49,6 +49,7 @@ export default function ManageStudents() {
   const [students, setStudents] = useState([])
   const [promotions, setPromotions] = useState([])
   const [filteredStudents, setFilteredStudents] = useState([])
+  const [filteredPromotions, setFilteredPromotions] = useState([])
   const [selectedPromotion, setSelectedPromotion] = useState('all')
   const [loading, setLoading] = useState(true)
   const [studentDialogOpen, setStudentDialogOpen] = useState(false)
@@ -59,6 +60,9 @@ export default function ManageStudents() {
   const [editingPromotion, setEditingPromotion] = useState(null)
   const [selectedStudents, setSelectedStudents] = useState(new Set())
   const [bulkPromotionIds, setBulkPromotionIds] = useState([])
+  const [showAllPromotions, setShowAllPromotions] = useState(false)
+  const [promotionSearchTerm, setPromotionSearchTerm] = useState('')
+  const [studentSearchTerm, setStudentSearchTerm] = useState('')
   const [studentFormData, setStudentFormData] = useState({
     studentId: '',
     nom: '',
@@ -99,6 +103,48 @@ export default function ManageStudents() {
       ))
     }
   }, [students, selectedPromotion])
+
+  // Effet pour filtrer les promotions
+  useEffect(() => {
+    let filtered = promotions
+    
+    if (promotionSearchTerm) {
+      filtered = filtered.filter(promotion =>
+        promotion.nom.toLowerCase().includes(promotionSearchTerm.toLowerCase()) ||
+        promotion.description?.toLowerCase().includes(promotionSearchTerm.toLowerCase()) ||
+        promotion.annee.toString().includes(promotionSearchTerm)
+      )
+    }
+    
+    setFilteredPromotions(filtered)
+  }, [promotions, promotionSearchTerm])
+
+  // Effet pour filtrer les étudiants par recherche
+  useEffect(() => {
+    let filtered = students
+    
+    // Filtrer par promotion sélectionnée
+    if (selectedPromotion !== 'all') {
+      filtered = filtered.filter(student => 
+        student.promotions && student.promotions.some(promo => promo.id === selectedPromotion)
+      )
+    }
+    
+    // Filtrer par terme de recherche
+    if (studentSearchTerm) {
+      filtered = filtered.filter(student =>
+        student.nom.toLowerCase().includes(studentSearchTerm.toLowerCase()) ||
+        student.prenom.toLowerCase().includes(studentSearchTerm.toLowerCase()) ||
+        student.email.toLowerCase().includes(studentSearchTerm.toLowerCase()) ||
+        student.studentId.toLowerCase().includes(studentSearchTerm.toLowerCase()) ||
+        (student.promotions && student.promotions.some(promo => 
+          promo.nom.toLowerCase().includes(studentSearchTerm.toLowerCase())
+        ))
+      )
+    }
+    
+    setFilteredStudents(filtered)
+  }, [students, selectedPromotion, studentSearchTerm])
 
   // Fonction pour générer un ID étudiant aléatoire
   const generateRandomStudentId = () => {
@@ -474,136 +520,190 @@ export default function ManageStudents() {
                   {promotions.length} promotion{promotions.length > 1 ? 's' : ''} enregistrée{promotions.length > 1 ? 's' : ''}
                 </CardDescription>
               </div>
-              <Dialog open={promotionDialogOpen} onOpenChange={setPromotionDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button className="gap-2" onClick={resetPromotionForm}>
-                    <Plus className="h-4 w-4" />
-                    Ajouter une promotion
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px]">
-                  <DialogHeader>
-                    <DialogTitle>
-                      {editingPromotion ? 'Modifier la promotion' : 'Nouvelle Promotion'}
-                    </DialogTitle>
-                    <DialogDescription>
-                      {editingPromotion ? 'Modifiez les informations de la promotion.' : 'Créez une nouvelle promotion pour regrouper les étudiants.'}
-                    </DialogDescription>
-                  </DialogHeader>
-                  <form onSubmit={handlePromotionSubmit} className="grid gap-4 py-4">
-                    {promotionFormErrors.general && (
-                      <div className="text-sm text-red-500 bg-red-50 p-3 rounded-md">
-                        {promotionFormErrors.general}
+              <div className="flex gap-3 items-center">
+                {/* Barre de recherche pour les promotions */}
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                  <Input
+                    placeholder="Rechercher une promotion..."
+                    value={promotionSearchTerm}
+                    onChange={(e) => setPromotionSearchTerm(e.target.value)}
+                    className="pl-10 w-64"
+                  />
+                </div>
+                <Dialog open={promotionDialogOpen} onOpenChange={setPromotionDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button className="gap-2" onClick={resetPromotionForm}>
+                      <Plus className="h-4 w-4" />
+                      Ajouter une promotion
+                    </Button>
+                    </DialogTrigger>
+                  <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                      <DialogTitle>
+                        {editingPromotion ? 'Modifier la promotion' : 'Nouvelle Promotion'}
+                      </DialogTitle>
+                      <DialogDescription>
+                        {editingPromotion ? 'Modifiez les informations de la promotion.' : 'Créez une nouvelle promotion pour regrouper les étudiants.'}
+                      </DialogDescription>
+                    </DialogHeader>
+                    <form onSubmit={handlePromotionSubmit} className="grid gap-4 py-4">
+                      {promotionFormErrors.general && (
+                        <div className="text-sm text-red-500 bg-red-50 p-3 rounded-md">
+                          {promotionFormErrors.general}
+                        </div>
+                      )}
+                      
+                      <div className="grid gap-2">
+                        <Label htmlFor="promo-nom">Nom de la promotion</Label>
+                        <Input
+                          id="promo-nom"
+                          value={promotionFormData.nom}
+                          onChange={(e) => handlePromotionInputChange('nom', e.target.value)}
+                          placeholder="Ex: Promo25, Externes2024..."
+                          className={promotionFormErrors.nom ? 'border-red-500' : ''}
+                        />
+                        {promotionFormErrors.nom && (
+                          <p className="text-sm text-red-500">{promotionFormErrors.nom}</p>
+                        )}
                       </div>
-                    )}
-                    
-                    <div className="grid gap-2">
-                      <Label htmlFor="promo-nom">Nom de la promotion</Label>
-                      <Input
-                        id="promo-nom"
-                        value={promotionFormData.nom}
-                        onChange={(e) => handlePromotionInputChange('nom', e.target.value)}
-                        placeholder="Ex: Promo25, Externes2024..."
-                        className={promotionFormErrors.nom ? 'border-red-500' : ''}
-                      />
-                      {promotionFormErrors.nom && (
-                        <p className="text-sm text-red-500">{promotionFormErrors.nom}</p>
-                      )}
-                    </div>
-                    
-                    <div className="grid gap-2">
-                      <Label htmlFor="promo-description">Description (optionnel)</Label>
-                      <Textarea
-                        id="promo-description"
-                        value={promotionFormData.description}
-                        onChange={(e) => handlePromotionInputChange('description', e.target.value)}
-                        placeholder="Description de la promotion..."
-                      />
-                    </div>
-                    
-                    <div className="grid gap-2">
-                      <Label htmlFor="promo-annee">Année</Label>
-                      <Input
-                        id="promo-annee"
-                        type="number"
-                        min="2020"
-                        value={promotionFormData.annee}
-                        onChange={(e) => handlePromotionInputChange('annee', parseInt(e.target.value))}
-                        className={promotionFormErrors.annee ? 'border-red-500' : ''}
-                      />
-                      {promotionFormErrors.annee && (
-                        <p className="text-sm text-red-500">{promotionFormErrors.annee}</p>
-                      )}
-                    </div>
-                    
-                    <div className="flex justify-end gap-3 pt-4">
-                      <Button type="button" variant="outline" onClick={() => setPromotionDialogOpen(false)}>
-                        Annuler
-                      </Button>
-                      <Button type="submit" disabled={submitLoading}>
-                        {submitLoading ? 'En cours...' : editingPromotion ? 'Modifier' : 'Créer'}
-                      </Button>
-                    </div>
-                  </form>
-                </DialogContent>
-              </Dialog>
+                      
+                      <div className="grid gap-2">
+                        <Label htmlFor="promo-description">Description (optionnel)</Label>
+                        <Textarea
+                          id="promo-description"
+                          value={promotionFormData.description}
+                          onChange={(e) => handlePromotionInputChange('description', e.target.value)}
+                          placeholder="Description de la promotion..."
+                        />
+                      </div>
+                      
+                      <div className="grid gap-2">
+                        <Label htmlFor="promo-annee">Année</Label>
+                        <Input
+                          id="promo-annee"
+                          type="number"
+                          min="2020"
+                          value={promotionFormData.annee}
+                          onChange={(e) => handlePromotionInputChange('annee', parseInt(e.target.value))}
+                          className={promotionFormErrors.annee ? 'border-red-500' : ''}
+                        />
+                        {promotionFormErrors.annee && (
+                          <p className="text-sm text-red-500">{promotionFormErrors.annee}</p>
+                        )}
+                      </div>
+                      
+                      <div className="flex justify-end gap-3 pt-4">
+                        <Button type="button" variant="outline" onClick={() => setPromotionDialogOpen(false)}>
+                          Annuler
+                        </Button>
+                        <Button type="submit" disabled={submitLoading}>
+                          {submitLoading ? 'En cours...' : editingPromotion ? 'Modifier' : 'Créer'}
+                        </Button>
+                      </div>
+                    </form>
+                  </DialogContent>
+                </Dialog>
+              </div>
             </div>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {promotions.map((promotion) => (
-                <div key={promotion.id} className="border rounded-lg p-4">
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="font-semibold">{promotion.nom}</h3>
-                    <div className="flex gap-1">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => openEditPromotionDialog(promotion)}
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-700">
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>Supprimer la promotion</AlertDialogTitle>
-                            <AlertDialogDescription>
-                              Êtes-vous sûr de vouloir supprimer la promotion "{promotion.nom}" ? 
-                              Cette action affectera tous les étudiants de cette promotion.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Annuler</AlertDialogCancel>
-                            <AlertDialogAction 
-                              onClick={() => handleDeletePromotion(promotion.id)}
-                              className="bg-red-600 hover:bg-red-700"
-                            >
-                              Supprimer
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
+              {(showAllPromotions ? filteredPromotions : filteredPromotions.slice(0, 6)).map((promotion) => {
+                // Calculer le nombre d'étudiants dans cette promotion
+                const studentCount = students.filter(student => 
+                  student.promotions && student.promotions.some(p => p.id === promotion.id)
+                ).length;
+                
+                return (
+                  <div key={promotion.id} className="border rounded-lg p-4">
+                    <div className="flex justify-between items-start mb-2">
+                      <h3 className="font-semibold">{promotion.nom}</h3>
+                      <div className="flex gap-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => openEditPromotionDialog(promotion)}
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-700">
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Supprimer la promotion</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Êtes-vous sûr de vouloir supprimer la promotion "{promotion.nom}" ? 
+                                Cette action affectera tous les étudiants de cette promotion.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Annuler</AlertDialogCancel>
+                              <AlertDialogAction 
+                                onClick={() => handleDeletePromotion(promotion.id)}
+                                className="bg-red-600 hover:bg-red-700"
+                              >
+                                Supprimer
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
+                    </div>
+                    {promotion.description && (
+                      <p className="text-sm text-gray-600 mb-2">{promotion.description}</p>
+                    )}
+                    <div className="flex justify-between items-center">
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getPromotionBadgeClass(promotion.annee)}`}>
+                        {promotion.annee}
+                      </span>
+                      <span className="text-sm text-gray-500">
+                        {studentCount} étudiant{studentCount > 1 ? 's' : ''}
+                      </span>
                     </div>
                   </div>
-                  {promotion.description && (
-                    <p className="text-sm text-gray-600 mb-2">{promotion.description}</p>
-                  )}
-                  <div className="flex justify-between items-center">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getPromotionBadgeClass(promotion.annee)}`}>
-                      {promotion.annee}
-                    </span>
-                    <span className="text-sm text-gray-500">
-                      {students.filter(s => s.promotion?.id === promotion.id).length} étudiant{students.filter(s => s.promotion?.id === promotion.id).length > 1 ? 's' : ''}
-                    </span>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
+            
+            {/* Bouton "Voir plus" si plus de 6 promotions */}
+            {filteredPromotions.length > 6 && (
+              <div className="mt-4 text-center">
+                <Button 
+                  variant="outline" 
+                  onClick={() => setShowAllPromotions(!showAllPromotions)}
+                  className="gap-2"
+                >
+                  {showAllPromotions ? (
+                    <>
+                      <ChevronUp className="h-4 w-4" />
+                      Voir moins
+                    </>
+                  ) : (
+                    <>
+                      <ChevronDown className="h-4 w-4" />
+                      Voir plus ({filteredPromotions.length - 6} autres)
+                    </>
+                  )}
+                </Button>
+              </div>
+            )}
+            
+            {filteredPromotions.length === 0 && promotionSearchTerm && (
+              <div className="text-center py-8">
+                <Search className="mx-auto h-8 w-8 text-gray-400" />
+                <h3 className="mt-2 text-sm font-semibold text-gray-900">
+                  Aucune promotion trouvée
+                </h3>
+                <p className="mt-1 text-sm text-gray-500">
+                  Aucune promotion ne correspond à votre recherche "{promotionSearchTerm}".
+                </p>
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -714,6 +814,17 @@ export default function ManageStudents() {
                     </AlertDialog>
                   </div>
                 )}
+                
+                {/* Barre de recherche pour les étudiants */}
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                  <Input
+                    placeholder="Rechercher un étudiant..."
+                    value={studentSearchTerm}
+                    onChange={(e) => setStudentSearchTerm(e.target.value)}
+                    className="pl-10 w-64"
+                  />
+                </div>
                 
                 <Select value={selectedPromotion} onValueChange={setSelectedPromotion}>
                   <SelectTrigger className="w-48">
@@ -959,7 +1070,7 @@ export default function ManageStudents() {
               </TableBody>
             </Table>
             
-            {filteredStudents.length === 0 && (
+            {filteredStudents.length === 0 && !studentSearchTerm && (
               <div className="text-center py-12">
                 <GraduationCap className="mx-auto h-12 w-12 text-gray-400" />
                 <h3 className="mt-2 text-sm font-semibold text-gray-900">
@@ -968,6 +1079,25 @@ export default function ManageStudents() {
                 <p className="mt-1 text-sm text-gray-500">
                   {selectedPromotion !== 'all' ? 'Changez de promotion ou ajoutez un nouvel étudiant.' : 'Commencez par créer votre premier étudiant.'}
                 </p>
+              </div>
+            )}
+            
+            {filteredStudents.length === 0 && studentSearchTerm && (
+              <div className="text-center py-12">
+                <Search className="mx-auto h-12 w-12 text-gray-400" />
+                <h3 className="mt-2 text-sm font-semibold text-gray-900">
+                  Aucun étudiant trouvé
+                </h3>
+                <p className="mt-1 text-sm text-gray-500">
+                  Aucun étudiant ne correspond à votre recherche "{studentSearchTerm}".
+                </p>
+                <Button 
+                  variant="outline" 
+                  onClick={() => setStudentSearchTerm('')}
+                  className="mt-2"
+                >
+                  Effacer la recherche
+                </Button>
               </div>
             )}
           </CardContent>
