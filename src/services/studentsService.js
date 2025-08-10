@@ -229,6 +229,72 @@ class StudentsService {
   async getStudentsByPromotion(promotionId) {
     return this.getAllStudents(promotionId);
   }
+
+  /**
+   * Supprime plusieurs étudiants en lot
+   * @param {Array<string>} studentIds - Liste des IDs des étudiants à supprimer
+   * @returns {Promise<Object>} Confirmation de suppression
+   */
+  async deleteMultipleStudents(studentIds) {
+    try {
+      const deletePromises = studentIds.map(id => this.deleteStudent(id));
+      await Promise.all(deletePromises);
+      return { success: true, deletedCount: studentIds.length };
+    } catch (error) {
+      console.error('Erreur lors de la suppression en lot:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Met à jour plusieurs étudiants avec la même promotion
+   * @param {Array<string>} studentIds - Liste des IDs des étudiants à modifier
+   * @param {string} promotionId - ID de la nouvelle promotion
+   * @returns {Promise<Object>} Confirmation de mise à jour
+   */
+  async updateMultipleStudentsPromotion(studentIds, promotionId) {
+    try {
+      const updatePromises = studentIds.map(id => 
+        this.updateStudent(id, { promotionId })
+      );
+      await Promise.all(updatePromises);
+      return { success: true, updatedCount: studentIds.length };
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour en lot:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Met à jour les promotions de plusieurs étudiants
+   * @param {Array<string>} studentIds - Liste des IDs des étudiants à modifier
+   * @param {Array<string>} promotionIds - Liste des IDs des promotions
+   * @returns {Promise<Array>} Étudiants mis à jour
+   */
+  async bulkUpdatePromotions(studentIds, promotionIds) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/bulk/promotions`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          studentIds,
+          promotionIds
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || `Erreur HTTP: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour groupée des promotions:', error);
+      throw error;
+    }
+  }
 }
 
 // Export d'une instance unique

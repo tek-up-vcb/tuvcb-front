@@ -203,6 +203,22 @@ class UsersService {
   async getUsersByRole(role) {
     return this.getAllUsers(role);
   }
+
+  /**
+   * Supprime plusieurs utilisateurs en lot
+   * @param {Array<string>} userIds - Liste des IDs des utilisateurs à supprimer
+   * @returns {Promise<Object>} Confirmation de suppression
+   */
+  async deleteMultipleUsers(userIds) {
+    try {
+      const deletePromises = userIds.map(id => this.deleteUser(id));
+      await Promise.all(deletePromises);
+      return { success: true, deletedCount: userIds.length };
+    } catch (error) {
+      console.error('Erreur lors de la suppression en lot:', error);
+      throw error;
+    }
+  }
 }
 
 // Export d'une instance unique

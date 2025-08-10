@@ -25,9 +25,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Plus, UserCheck, Shield, User } from 'lucide-react'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Plus, UserCheck, Shield, User, Pencil, Trash2 } from 'lucide-react'
 import AuthService from '@/lib/authService'
 import { validateEthereumAddressDetailed, formatEthereumAddress } from '@/utils/ethereum'
 import usersService from '@/services/usersService'
@@ -36,6 +48,9 @@ export default function ManageUsers() {
   const [users, setUsers] = useState([])
   const [loading, setLoading] = useState(true)
   const [dialogOpen, setDialogOpen] = useState(false)
+  const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false)
+  const [editingUser, setEditingUser] = useState(null)
+  const [selectedUsers, setSelectedUsers] = useState(new Set())
   const [formData, setFormData] = useState({
     nom: '',
     prenom: '',
@@ -58,6 +73,28 @@ export default function ManageUsers() {
 
     checkAuth()
   }, [navigate])
+
+  // Gestion de la sélection multiple
+  const handleSelectUser = (userId, checked) => {
+    const newSelection = new Set(selectedUsers)
+    if (checked) {
+      newSelection.add(userId)
+    } else {
+      newSelection.delete(userId)
+    }
+    setSelectedUsers(newSelection)
+  }
+
+  const handleSelectAll = (checked) => {
+    if (checked) {
+      setSelectedUsers(new Set(users.map(u => u.id)))
+    } else {
+      setSelectedUsers(new Set())
+    }
+  }
+
+  const isAllSelected = users.length > 0 && selectedUsers.size === users.length
+  const isIndeterminate = selectedUsers.size > 0 && selectedUsers.size < users.length
 
   const loadUsers = async () => {
     try {
@@ -118,19 +155,24 @@ export default function ManageUsers() {
     try {
       setSubmitLoading(true)
       
-      // Créer l'utilisateur via l'API
-      const newUser = await usersService.createUser(formData)
-      
-      // Mettre à jour la liste des utilisateurs
-      setUsers(prevUsers => [newUser, ...prevUsers])
+      if (editingUser) {
+        // Modifier l'utilisateur existant
+        const updatedUser = await usersService.updateUser(editingUser.id, formData)
+        setUsers(prevUsers => 
+          prevUsers.map(user => user.id === editingUser.id ? updatedUser : user)
+        )
+      } else {
+        // Créer un nouvel utilisateur
+        const newUser = await usersService.createUser(formData)
+        setUsers(prevUsers => [newUser, ...prevUsers])
+      }
       
       // Réinitialiser le formulaire
-      setFormData({ nom: '', prenom: '', role: '', walletAddress: '' })
-      setFormErrors({})
+      resetForm()
       setDialogOpen(false)
       
     } catch (error) {
-      console.error('Erreur lors de la création de l\'utilisateur:', error)
+      console.error('Erreur lors de la soumission:', error)
       
       // Afficher l'erreur dans le formulaire
       if (error.message.includes('adresse wallet')) {
@@ -138,6 +180,63 @@ export default function ManageUsers() {
       } else {
         setFormErrors({ general: error.message })
       }
+    } finally {
+      setSubmitLoading(false)
+    }
+  }
+
+  const resetForm = () => {
+    setFormData({ nom: '', prenom: '', role: '', walletAddress: '' })
+    setFormErrors({})
+    setEditingUser(null)
+  }
+
+  const openEditDialog = (user) => {
+    setEditingUser(user)
+    setFormData({
+      nom: user.nom,
+      prenom: user.prenom,
+      role: user.role,
+      walletAddress: user.walletAddress
+    })
+    setDialogOpen(true)
+  }
+
+  const handleDeleteUser = async (userId) => {
+    try {
+      await usersService.deleteUser(userId)
+      setUsers(prevUsers => prevUsers.filter(user => user.id !== userId))
+    } catch (error) {
+      console.error('Erreur lors de la suppression:', error)
+    }
+  }
+
+  const handleBulkDelete = async () => {
+    if (selectedUsers.size === 0) {
+      return
+    }
+
+    try {
+      setSubmitLoading(true)
+      
+      // Supprimer tous les utilisateurs sélectionnés
+      const deletePromises = Array.from(selectedUsers).map(userId => 
+        usersService.deleteUser(userId)
+      )
+      
+      await Promise.all(deletePromises)
+      
+      // Mettre à jour l'état local
+      setUsers(prevUsers => 
+        prevUsers.filter(user => !selectedUsers.has(user.id))
+      )
+      
+      // Réinitialiser la sélection
+      setSelectedUsers(new Set())
+      setBulkDeleteDialogOpen(false)
+      
+    } catch (error) {
+      console.error('Erreur lors de la suppression en lot:', error)
     } finally {
       setSubmitLoading(false)
     }
@@ -209,108 +308,154 @@ export default function ManageUsers() {
                 <CardTitle>Liste des Utilisateurs</CardTitle>
                 <CardDescription>
                   {users.length} utilisateur{users.length > 1 ? 's' : ''} enregistré{users.length > 1 ? 's' : ''}
+                  {selectedUsers.size > 0 && (
+                    <span className="ml-2 text-blue-600 font-medium">
+                      • {selectedUsers.size} sélectionné{selectedUsers.size > 1 ? 's' : ''}
+                    </span>
+                  )}
                 </CardDescription>
               </div>
-              <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button className="gap-2">
-                    <Plus className="h-4 w-4" />
-                    Ajouter un utilisateur
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px]">
-                  <DialogHeader>
-                    <DialogTitle>Nouvel Utilisateur</DialogTitle>
-                    <DialogDescription>
-                      Créez un nouveau compte utilisateur. Tous les champs sont obligatoires.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <form onSubmit={handleSubmit} className="grid gap-4 py-4">
-                    {formErrors.general && (
-                      <div className="text-sm text-red-500 bg-red-50 p-3 rounded-md">
-                        {formErrors.general}
+              <div className="flex gap-3 items-center">
+                {selectedUsers.size > 0 && (
+                  <div className="flex gap-2 border-r pr-3">
+                    <AlertDialog open={bulkDeleteDialogOpen} onOpenChange={setBulkDeleteDialogOpen}>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="outline" size="sm" className="gap-2 text-red-600 hover:text-red-700">
+                          <Trash2 className="h-4 w-4" />
+                          Supprimer ({selectedUsers.size})
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Supprimer les utilisateurs sélectionnés</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Êtes-vous sûr de vouloir supprimer {selectedUsers.size} utilisateur{selectedUsers.size > 1 ? 's' : ''} ? 
+                            Cette action est irréversible.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Annuler</AlertDialogCancel>
+                          <AlertDialogAction 
+                            onClick={handleBulkDelete}
+                            className="bg-red-600 hover:bg-red-700"
+                            disabled={submitLoading}
+                          >
+                            {submitLoading ? 'Suppression...' : 'Supprimer'}
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
+                )}
+                
+                <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button className="gap-2" onClick={resetForm}>
+                      <Plus className="h-4 w-4" />
+                      Ajouter un utilisateur
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                      <DialogTitle>{editingUser ? 'Modifier l\'utilisateur' : 'Nouvel Utilisateur'}</DialogTitle>
+                      <DialogDescription>
+                        {editingUser ? 'Modifiez les informations de l\'utilisateur.' : 'Créez un nouveau compte utilisateur. Tous les champs sont obligatoires.'}
+                      </DialogDescription>
+                    </DialogHeader>
+                    <form onSubmit={handleSubmit} className="grid gap-4 py-4">
+                      {formErrors.general && (
+                        <div className="text-sm text-red-500 bg-red-50 p-3 rounded-md">
+                          {formErrors.general}
+                        </div>
+                      )}
+                      
+                      <div className="grid gap-2">
+                        <Label htmlFor="nom">Nom</Label>
+                        <Input
+                          id="nom"
+                          value={formData.nom}
+                          onChange={(e) => handleInputChange('nom', e.target.value)}
+                          placeholder="Entrez le nom"
+                          className={formErrors.nom ? 'border-red-500' : ''}
+                        />
+                        {formErrors.nom && (
+                          <p className="text-sm text-red-500">{formErrors.nom}</p>
+                        )}
                       </div>
-                    )}
-                    
-                    <div className="grid gap-2">
-                      <Label htmlFor="nom">Nom</Label>
-                      <Input
-                        id="nom"
-                        value={formData.nom}
-                        onChange={(e) => handleInputChange('nom', e.target.value)}
-                        placeholder="Entrez le nom"
-                        className={formErrors.nom ? 'border-red-500' : ''}
-                      />
-                      {formErrors.nom && (
-                        <p className="text-sm text-red-500">{formErrors.nom}</p>
-                      )}
-                    </div>
-                    
-                    <div className="grid gap-2">
-                      <Label htmlFor="prenom">Prénom</Label>
-                      <Input
-                        id="prenom"
-                        value={formData.prenom}
-                        onChange={(e) => handleInputChange('prenom', e.target.value)}
-                        placeholder="Entrez le prénom"
-                        className={formErrors.prenom ? 'border-red-500' : ''}
-                      />
-                      {formErrors.prenom && (
-                        <p className="text-sm text-red-500">{formErrors.prenom}</p>
-                      )}
-                    </div>
-                    
-                    <div className="grid gap-2">
-                      <Label htmlFor="role">Rôle</Label>
-                      <Select value={formData.role} onValueChange={(value) => handleInputChange('role', value)}>
-                        <SelectTrigger className={formErrors.role ? 'border-red-500' : ''}>
-                          <SelectValue placeholder="Sélectionnez un rôle" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="Admin">Admin</SelectItem>
-                          <SelectItem value="Teacher">Teacher</SelectItem>
-                          <SelectItem value="Guest">Guest</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      {formErrors.role && (
-                        <p className="text-sm text-red-500">{formErrors.role}</p>
-                      )}
-                    </div>
-                    
-                    <div className="grid gap-2">
-                      <Label htmlFor="walletAddress">Adresse Wallet</Label>
-                      <Input
-                        id="walletAddress"
-                        value={formData.walletAddress}
-                        onChange={(e) => handleInputChange('walletAddress', e.target.value)}
-                        placeholder="0x..."
-                        className={formErrors.walletAddress ? 'border-red-500' : ''}
-                      />
-                      {formErrors.walletAddress && (
-                        <p className="text-sm text-red-500">{formErrors.walletAddress}</p>
-                      )}
-                      <p className="text-xs text-gray-500">
-                        Adresse Ethereum valide (format: 0x + 40 caractères hexadécimaux)
-                      </p>
-                    </div>
-                    
-                    <div className="flex justify-end gap-3 pt-4">
-                      <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
-                        Annuler
-                      </Button>
-                      <Button type="submit" disabled={submitLoading}>
-                        {submitLoading ? 'Création...' : 'Créer l\'utilisateur'}
-                      </Button>
-                    </div>
-                  </form>
-                </DialogContent>
-              </Dialog>
+                      
+                      <div className="grid gap-2">
+                        <Label htmlFor="prenom">Prénom</Label>
+                        <Input
+                          id="prenom"
+                          value={formData.prenom}
+                          onChange={(e) => handleInputChange('prenom', e.target.value)}
+                          placeholder="Entrez le prénom"
+                          className={formErrors.prenom ? 'border-red-500' : ''}
+                        />
+                        {formErrors.prenom && (
+                          <p className="text-sm text-red-500">{formErrors.prenom}</p>
+                        )}
+                      </div>
+                      
+                      <div className="grid gap-2">
+                        <Label htmlFor="role">Rôle</Label>
+                        <Select value={formData.role} onValueChange={(value) => handleInputChange('role', value)}>
+                          <SelectTrigger className={formErrors.role ? 'border-red-500' : ''}>
+                            <SelectValue placeholder="Sélectionnez un rôle" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Admin">Admin</SelectItem>
+                            <SelectItem value="Teacher">Teacher</SelectItem>
+                            <SelectItem value="Guest">Guest</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        {formErrors.role && (
+                          <p className="text-sm text-red-500">{formErrors.role}</p>
+                        )}
+                      </div>
+                      
+                      <div className="grid gap-2">
+                        <Label htmlFor="walletAddress">Adresse Wallet</Label>
+                        <Input
+                          id="walletAddress"
+                          value={formData.walletAddress}
+                          onChange={(e) => handleInputChange('walletAddress', e.target.value)}
+                          placeholder="0x..."
+                          className={formErrors.walletAddress ? 'border-red-500' : ''}
+                        />
+                        {formErrors.walletAddress && (
+                          <p className="text-sm text-red-500">{formErrors.walletAddress}</p>
+                        )}
+                        <p className="text-xs text-gray-500">
+                          Adresse Ethereum valide (format: 0x + 40 caractères hexadécimaux)
+                        </p>
+                      </div>
+                      
+                      <div className="flex justify-end gap-3 pt-4">
+                        <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
+                          Annuler
+                        </Button>
+                        <Button type="submit" disabled={submitLoading}>
+                          {submitLoading ? (editingUser ? 'Modification...' : 'Création...') : (editingUser ? 'Modifier' : 'Créer l\'utilisateur')}
+                        </Button>
+                      </div>
+                    </form>
+                  </DialogContent>
+                </Dialog>
+              </div>
             </div>
           </CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-12">
+                    <Checkbox
+                      checked={isAllSelected}
+                      onCheckedChange={handleSelectAll}
+                      aria-label="Sélectionner tous les utilisateurs"
+                    />
+                  </TableHead>
                   <TableHead>Nom</TableHead>
                   <TableHead>Prénom</TableHead>
                   <TableHead>Rôle</TableHead>
@@ -322,6 +467,13 @@ export default function ManageUsers() {
               <TableBody>
                 {users.map((user) => (
                   <TableRow key={user.id}>
+                    <TableCell>
+                      <Checkbox
+                        checked={selectedUsers.has(user.id)}
+                        onCheckedChange={(checked) => handleSelectUser(user.id, checked)}
+                        aria-label={`Sélectionner ${user.prenom} ${user.nom}`}
+                      />
+                    </TableCell>
                     <TableCell className="font-medium">{user.nom}</TableCell>
                     <TableCell>{user.prenom}</TableCell>
                     <TableCell>
@@ -339,9 +491,40 @@ export default function ManageUsers() {
                     </TableCell>
                     <TableCell>{new Date(user.dateCreation).toLocaleDateString('fr-FR')}</TableCell>
                     <TableCell className="text-right">
-                      <Button variant="outline" size="sm">
-                        Modifier
-                      </Button>
+                      <div className="flex gap-2 justify-end">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => openEditDialog(user)}
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button variant="outline" size="sm" className="text-red-600 hover:text-red-700">
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Supprimer l'utilisateur</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Êtes-vous sûr de vouloir supprimer l'utilisateur {user.prenom} {user.nom} ? 
+                                Cette action est irréversible.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Annuler</AlertDialogCancel>
+                              <AlertDialogAction 
+                                onClick={() => handleDeleteUser(user.id)}
+                                className="bg-red-600 hover:bg-red-700"
+                              >
+                                Supprimer
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}
