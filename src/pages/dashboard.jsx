@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Users } from 'lucide-react'
 import AuthService from '@/lib/authService'
 
 export default function Dashboard() {
@@ -88,6 +89,14 @@ export default function Dashboard() {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
+                <Button 
+                  className="w-full" 
+                  variant="outline"
+                  onClick={() => navigate('/manage-users')}
+                >
+                  <Users className="h-4 w-4 mr-2" />
+                  Gérer les utilisateurs
+                </Button>
                 <Button className="w-full" variant="outline">
                   Consulter les transactions
                 </Button>
