@@ -65,18 +65,45 @@ export default function Dashboard() {
           <Card className="border-0 shadow-sm">
             <CardHeader>
               <CardTitle>User Profile</CardTitle>
-              <CardDescription>Your wallet information</CardDescription>
+              <CardDescription>Your account information</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-2">
-                <p className="text-sm font-medium text-gray-500">Wallet Address:</p>
-                <p className="text-sm font-mono bg-gray-100 p-2 rounded break-all border-0">
-                  {user?.address || AuthService.getUserAddress()}
-                </p>
-                <p className="text-sm font-medium text-gray-500 mt-4">Status:</p>
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 border-0">
-                  Authenticated ✓
-                </span>
+              <div className="space-y-3">
+                {user?.nom && user?.prenom && (
+                  <div>
+                    <p className="text-sm font-medium text-gray-500">Full Name:</p>
+                    <p className="text-base font-semibold text-gray-900">
+                      {user.prenom} {user.nom}
+                    </p>
+                  </div>
+                )}
+                
+                {user?.role && (
+                  <div>
+                    <p className="text-sm font-medium text-gray-500">Role:</p>
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border-0 ${
+                      user.role === 'Admin' ? 'bg-red-100 text-red-800' :
+                      user.role === 'Teacher' ? 'bg-blue-100 text-blue-800' :
+                      'bg-gray-100 text-gray-800'
+                    }`}>
+                      {user.role}
+                    </span>
+                  </div>
+                )}
+
+                <div>
+                  <p className="text-sm font-medium text-gray-500">Wallet Address:</p>
+                  <p className="text-sm font-mono bg-gray-100 p-2 rounded break-all border-0">
+                    {user?.walletAddress || user?.address || AuthService.getUserAddress()}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="text-sm font-medium text-gray-500">Status:</p>
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 border-0">
+                    Authenticated ✓
+                  </span>
+                </div>
               </div>
             </CardContent>
           </Card>
