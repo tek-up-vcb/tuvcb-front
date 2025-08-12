@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Users, GraduationCap } from 'lucide-react'
+import { Users, GraduationCap, Award } from 'lucide-react'
 import AuthService from '@/lib/authService'
 
 export default function Dashboard() {
@@ -104,6 +104,14 @@ export default function Dashboard() {
                 >
                   <GraduationCap className="h-4 w-4 mr-2" />
                   Manage Students
+                </Button>
+                <Button 
+                  className="w-full border-0 shadow-sm" 
+                  variant="outline"
+                  onClick={() => navigate('/manage-diplomas')}
+                >
+                  <Award className="h-4 w-4 mr-2" />
+                  Manage Diplomas
                 </Button>
                 <Button className="w-full border-0 shadow-sm" variant="outline">
                   View Transactions
