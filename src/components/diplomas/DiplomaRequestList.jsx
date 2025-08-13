@@ -91,14 +91,32 @@ const DiplomaRequestList = ({
   };
 
   const canUserSign = (request) => {
-    if (!currentUserId) return false;
+    console.log('=== CAN USER SIGN CHECK ===');
+    console.log('currentUserId received:', currentUserId);
+    console.log('request.requiredSignatures:', request.requiredSignatures);
+    
+    if (!currentUserId) {
+      console.log('❌ No currentUserId - cannot sign');
+      return false;
+    }
     
     const isRequiredSigner = request.requiredSignatures?.includes(currentUserId);
+    console.log('✅ isRequiredSigner:', isRequiredSigner);
+    
+    if (!isRequiredSigner) {
+      console.log('❌ User not in required signers');
+      return false;
+    }
+    
     const hasAlreadySigned = request.signatures?.some(sig => 
       sig.userId === currentUserId && sig.isSigned
     );
+    console.log('hasAlreadySigned:', hasAlreadySigned);
     
-    return isRequiredSigner && !hasAlreadySigned && request.status === 'pending';
+    const canSign = isRequiredSigner && !hasAlreadySigned && request.status === 'pending';
+    console.log('🎯 Final result - canSign:', canSign);
+    
+    return canSign;
   };
 
   const canUserDelete = (request) => {

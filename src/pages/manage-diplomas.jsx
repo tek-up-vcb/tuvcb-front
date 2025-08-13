@@ -69,19 +69,16 @@ const ManageDiplomas = () => {
 
   const loadCurrentUser = async () => {
     try {
-      console.log('=== LOADING CURRENT USER ===');
-      
       if (!AuthService.isAuthenticated()) {
-        console.log('User not authenticated');
         setCurrentUser(null);
         return;
       }
       
       const profile = await AuthService.getProfile();
-      console.log('User profile from AuthService:', profile);
+      console.log('✅ User loaded - wallet:', profile?.walletAddress);
       setCurrentUser(profile);
     } catch (err) {
-      console.error('Erreur lors du chargement de l\'utilisateur:', err);
+      console.error('❌ Error loading user:', err);
       setCurrentUser(null);
       throw err;
     }
@@ -248,12 +245,14 @@ const ManageDiplomas = () => {
     }
   }, [error]);
 
-  if (loading) {
+  if (loading || !currentUser) {
     return (
       <div className="container mx-auto p-6">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Chargement des données...</p>
+          <p className="mt-4 text-gray-600">
+            {loading ? 'Chargement des données...' : 'Chargement du profil utilisateur...'}
+          </p>
         </div>
       </div>
     );
@@ -299,7 +298,7 @@ const ManageDiplomas = () => {
         </TabsList>
 
         {/* Onglet Demandes */}
-        <TabsContent value="requests" className="space-y-6">
+        <TabsContent value="requests" className="space-y-6">          
           {/* Formulaire de création de demande */}
           <DiplomaRequestForm
             diplomas={diplomas}
@@ -315,7 +314,7 @@ const ManageDiplomas = () => {
             requests={diplomaRequests}
             users={users}
             students={students}
-            currentUserId={currentUser?.address}
+            currentUserId={currentUser?.walletAddress}
             onSign={openSignatureDialog}
             onDelete={handleDeleteRequest}
             loading={false}
