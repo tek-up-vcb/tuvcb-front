@@ -76,6 +76,8 @@ const ManageDiplomas = () => {
       
       const profile = await AuthService.getProfile();
       console.log('✅ User loaded - wallet:', profile?.walletAddress);
+      console.log('✅ User profile structure:', profile);
+      console.log('✅ User ID:', profile?.id);
       setCurrentUser(profile);
     } catch (err) {
       console.error('❌ Error loading user:', err);
@@ -314,7 +316,7 @@ const ManageDiplomas = () => {
             requests={diplomaRequests}
             users={users}
             students={students}
-            currentUserId={currentUser?.walletAddress}
+            currentUserId={currentUser?.id}
             onSign={openSignatureDialog}
             onDelete={handleDeleteRequest}
             loading={false}
