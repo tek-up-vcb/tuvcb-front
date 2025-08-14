@@ -7,7 +7,7 @@ import { Textarea } from '../ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Alert, AlertDescription } from '../ui/alert';
 
-const DiplomaForm = ({ onSubmit, loading = false }) => {
+const DiplomaForm = ({ onSubmit, onCancel, loading = false }) => {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -21,15 +21,15 @@ const DiplomaForm = ({ onSubmit, loading = false }) => {
     e.preventDefault();
     setError(null);
 
-    // Validation basique
+    // Basic validation
     if (!formData.name || !formData.level || !formData.field) {
-      setError('Veuillez remplir tous les champs obligatoires');
+      setError('Please fill in all required fields');
       return;
     }
 
     try {
       await onSubmit(formData);
-      // Réinitialiser le formulaire après succès
+      // Reset form after success
       setFormData({
         name: '',
         description: '',
@@ -37,16 +37,16 @@ const DiplomaForm = ({ onSubmit, loading = false }) => {
         field: '',
       });
     } catch (err) {
-      setError('Erreur lors de la création du diplôme');
+      setError('Error creating diploma');
     }
   };
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Nouveau Diplôme</CardTitle>
+        <CardTitle>New Diploma</CardTitle>
         <CardDescription>
-          Ajoutez un nouveau type de diplôme disponible
+          Add a new available diploma type
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -59,42 +59,42 @@ const DiplomaForm = ({ onSubmit, loading = false }) => {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="name">Nom du diplôme *</Label>
+              <Label htmlFor="name">Diploma name *</Label>
               <Input
                 id="name"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="Ex: Diplôme d'Ingénieur Informatique"
+                placeholder="Ex: Computer Engineering Diploma"
                 required
               />
             </div>
 
             <div>
-              <Label htmlFor="level">Niveau *</Label>
+              <Label htmlFor="level">Level *</Label>
               <Select
                 value={formData.level}
                 onValueChange={(value) => setFormData({ ...formData, level: value })}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Sélectionner un niveau" />
+                  <SelectValue placeholder="Select a level" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="License">License</SelectItem>
+                  <SelectItem value="Bachelor">Bachelor</SelectItem>
                   <SelectItem value="Master">Master</SelectItem>
-                  <SelectItem value="Doctorat">Doctorat</SelectItem>
-                  <SelectItem value="Certificat">Certificat</SelectItem>
-                  <SelectItem value="Formation">Formation</SelectItem>
+                  <SelectItem value="PhD">PhD</SelectItem>
+                  <SelectItem value="Certificate">Certificate</SelectItem>
+                  <SelectItem value="Training">Training</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div>
-              <Label htmlFor="field">Domaine *</Label>
+              <Label htmlFor="field">Field *</Label>
               <Input
                 id="field"
                 value={formData.field}
                 onChange={(e) => setFormData({ ...formData, field: e.target.value })}
-                placeholder="Ex: Informatique, Data Science..."
+                placeholder="Ex: Computer Science, Data Science..."
                 required
               />
             </div>
@@ -106,14 +106,19 @@ const DiplomaForm = ({ onSubmit, loading = false }) => {
               id="description"
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              placeholder="Description détaillée du diplôme..."
+              placeholder="Detailed description of the diploma..."
               rows={3}
             />
           </div>
 
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? 'Création...' : 'Créer le Diplôme'}
-          </Button>
+          <div className="flex gap-2">
+            <Button type="button" variant="outline" onClick={onCancel} className="flex-1">
+              Cancel
+            </Button>
+            <Button type="submit" className="flex-1" disabled={loading}>
+              {loading ? 'Creating...' : 'Create Diploma'}
+            </Button>
+          </div>
         </form>
       </CardContent>
     </Card>

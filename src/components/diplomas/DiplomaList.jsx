@@ -2,19 +2,27 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
-import { Edit, Trash2 } from 'lucide-react';
+import { Edit, Trash2, Plus } from 'lucide-react';
 
-const DiplomaList = ({ diplomas, onEdit, onDelete, loading = false }) => {
+const DiplomaList = ({ diplomas, onEdit, onDelete, onCreateNew, loading = false }) => {
   if (loading) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Diplômes Disponibles</CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle>Available Diplomas</CardTitle>
+            {onCreateNew && (
+              <Button onClick={onCreateNew} size="sm" className="flex items-center gap-2">
+                <Plus className="h-4 w-4" />
+                New Diploma
+              </Button>
+            )}
+          </div>
         </CardHeader>
         <CardContent>
           <div className="text-center py-8">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="mt-2 text-gray-600">Chargement...</p>
+            <p className="mt-2 text-gray-600">Loading...</p>
           </div>
         </CardContent>
       </Card>
@@ -25,13 +33,21 @@ const DiplomaList = ({ diplomas, onEdit, onDelete, loading = false }) => {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Diplômes Disponibles</CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle>Available Diplomas</CardTitle>
+            {onCreateNew && (
+              <Button onClick={onCreateNew} size="sm" className="flex items-center gap-2">
+                <Plus className="h-4 w-4" />
+                New Diploma
+              </Button>
+            )}
+          </div>
         </CardHeader>
         <CardContent>
           <div className="text-center py-8">
-            <p className="text-gray-600">Aucun diplôme disponible</p>
+            <p className="text-gray-600">No diplomas available</p>
             <p className="text-sm text-gray-500 mt-1">
-              Créez votre premier diplôme pour commencer
+              Create your first diploma to get started
             </p>
           </div>
         </CardContent>
@@ -42,7 +58,15 @@ const DiplomaList = ({ diplomas, onEdit, onDelete, loading = false }) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Diplômes Disponibles ({diplomas.length})</CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle>Available Diplomas ({diplomas.length})</CardTitle>
+          {onCreateNew && (
+            <Button onClick={onCreateNew} size="sm" className="flex items-center gap-2">
+              <Plus className="h-4 w-4" />
+              New Diploma
+            </Button>
+          )}
+        </div>
       </CardHeader>
       <CardContent>
         <div className="grid gap-4">
@@ -53,7 +77,7 @@ const DiplomaList = ({ diplomas, onEdit, onDelete, loading = false }) => {
                   <div className="flex items-center gap-2 mb-2">
                     <h3 className="font-semibold text-lg">{diploma.name}</h3>
                     <Badge variant={diploma.isActive ? "default" : "secondary"}>
-                      {diploma.isActive ? "Actif" : "Inactif"}
+                      {diploma.isActive ? "Active" : "Inactive"}
                     </Badge>
                   </div>
                   
@@ -67,7 +91,7 @@ const DiplomaList = ({ diplomas, onEdit, onDelete, loading = false }) => {
                   )}
                   
                   <div className="text-xs text-gray-400 mt-2">
-                    Créé le {new Date(diploma.createdAt).toLocaleDateString('fr-FR')}
+                    Created on {new Date(diploma.createdAt).toLocaleDateString('en-US')}
                   </div>
                 </div>
 

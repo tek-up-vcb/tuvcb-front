@@ -13,7 +13,8 @@ const DiplomaRequestForm = ({
   students = [], 
   promotions = [], 
   users = [], 
-  onSubmit, 
+  onSubmit,
+  onCancel,
   loading = false 
 }) => {
   const [formData, setFormData] = useState({
@@ -32,7 +33,7 @@ const DiplomaRequestForm = ({
 
     // Validation
     if (!formData.diplomaId || formData.studentIds.length === 0 || formData.requiredSignatures.length === 0) {
-      setError('Veuillez sélectionner un diplôme, des étudiants et des signataires');
+      setError('Please select a diploma, students and signatories');
       return;
     }
 
@@ -41,7 +42,7 @@ const DiplomaRequestForm = ({
 
     try {
       await onSubmit(formData);
-      // Réinitialiser le formulaire
+      // Reset form
       setFormData({
         diplomaId: '',
         studentIds: [],
@@ -51,7 +52,7 @@ const DiplomaRequestForm = ({
       setSelectedPromotion('');
     } catch (err) {
       console.error('Form submission error:', err);
-      setError('Erreur lors de la création de la demande: ' + err.message);
+      setError('Error creating request: ' + err.message);
     }
   };
 
@@ -79,7 +80,7 @@ const DiplomaRequestForm = ({
       );
       const newStudentIds = promotionStudents.map(s => s.id);
       
-      // Ajouter les étudiants qui ne sont pas déjà sélectionnés
+      // Add students who are not already selected
       const uniqueStudentIds = [...new Set([...formData.studentIds, ...newStudentIds])];
       
       setFormData({
@@ -107,12 +108,12 @@ const DiplomaRequestForm = ({
 
   const getStudentName = (studentId) => {
     const student = students.find(s => s.id === studentId);
-    return student ? `${student.prenom} ${student.nom}` : 'Étudiant inconnu';
+    return student ? `${student.prenom} ${student.nom}` : 'Unknown student';
   };
 
   const getUserName = (userId) => {
     const user = users.find(u => u.id === userId);
-    return user ? `${user.prenom} ${user.nom}` : 'Utilisateur inconnu';
+    return user ? `${user.prenom} ${user.nom}` : 'Unknown user';
   };
 
   const signatoryUsers = users.filter(user => 
@@ -122,9 +123,9 @@ const DiplomaRequestForm = ({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Nouvelle Demande de Diplôme</CardTitle>
+        <CardTitle>New Diploma Request</CardTitle>
         <CardDescription>
-          Créez une demande de soumission de diplôme pour un ou plusieurs étudiants
+          Create a diploma submission request for one or more students
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -135,15 +136,15 @@ const DiplomaRequestForm = ({
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Sélection du diplôme */}
+          {/* Diploma selection */}
           <div>
-            <Label htmlFor="diploma">Diplôme *</Label>
+            <Label htmlFor="diploma">Diploma *</Label>
             <Select
               value={formData.diplomaId}
               onValueChange={(value) => setFormData({...formData, diplomaId: value})}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Sélectionner un diplôme" />
+                <SelectValue placeholder="Select a diploma" />
               </SelectTrigger>
               <SelectContent>
                 {diplomas.map(diploma => (
@@ -155,20 +156,20 @@ const DiplomaRequestForm = ({
             </Select>
           </div>
 
-          {/* Sélection des étudiants */}
+          {/* Student selection */}
           <div>
-            <Label>Étudiants concernés *</Label>
+            <Label>Concerned students *</Label>
             
-            {/* Sélection rapide par promotion */}
+            {/* Quick selection by promotion */}
             <div className="mt-2">
-              <Label htmlFor="promotion" className="text-sm">Sélection rapide par promotion</Label>
+              <Label htmlFor="promotion" className="text-sm">Quick selection by promotion</Label>
               <div className="flex gap-2">
                 <Select
                   value={selectedPromotion}
                   onValueChange={setSelectedPromotion}
                 >
                   <SelectTrigger className="flex-1">
-                    <SelectValue placeholder="Choisir une promotion" />
+                    <SelectValue placeholder="Choose a promotion" />
                   </SelectTrigger>
                   <SelectContent>
                     {promotions.map(promotion => (
@@ -184,17 +185,17 @@ const DiplomaRequestForm = ({
                   onClick={() => selectedPromotion && addStudentsByPromotion(selectedPromotion)}
                   disabled={!selectedPromotion}
                 >
-                  Ajouter la promotion
+                  Add promotion
                 </Button>
               </div>
             </div>
 
-            {/* Sélection individuelle */}
+            {/* Individual selection */}
             <div className="mt-2">
-              <Label htmlFor="students" className="text-sm">Ou sélection individuelle</Label>
+              <Label htmlFor="students" className="text-sm">Or individual selection</Label>
               <Select onValueChange={addStudent}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Ajouter un étudiant" />
+                  <SelectValue placeholder="Add a student" />
                 </SelectTrigger>
                 <SelectContent>
                   {students.map(student => (
@@ -207,10 +208,10 @@ const DiplomaRequestForm = ({
               </Select>
             </div>
 
-            {/* Étudiants sélectionnés */}
+            {/* Selected students */}
             {formData.studentIds.length > 0 && (
               <div className="mt-3">
-                <Label className="text-sm">Étudiants sélectionnés ({formData.studentIds.length})</Label>
+                <Label className="text-sm">Selected students ({formData.studentIds.length})</Label>
                 <div className="flex flex-wrap gap-2 mt-2">
                   {formData.studentIds.map(studentId => (
                     <Badge key={studentId} variant="secondary" className="flex items-center gap-1">
@@ -229,12 +230,12 @@ const DiplomaRequestForm = ({
             )}
           </div>
 
-          {/* Signataires requis */}
+          {/* Required signatories */}
           <div>
-            <Label>Signataires requis *</Label>
+            <Label>Required signatories *</Label>
             <Select onValueChange={addSignature}>
               <SelectTrigger>
-                <SelectValue placeholder="Ajouter un signataire" />
+                <SelectValue placeholder="Add a signatory" />
               </SelectTrigger>
               <SelectContent>
                 {signatoryUsers.map(user => (
@@ -247,7 +248,7 @@ const DiplomaRequestForm = ({
 
             {formData.requiredSignatures.length > 0 && (
               <div className="mt-3">
-                <Label className="text-sm">Signataires sélectionnés ({formData.requiredSignatures.length})</Label>
+                <Label className="text-sm">Selected signatories ({formData.requiredSignatures.length})</Label>
                 <div className="flex flex-wrap gap-2 mt-2">
                   {formData.requiredSignatures.map(userId => (
                     <Badge key={userId} variant="outline" className="flex items-center gap-1">
@@ -266,21 +267,26 @@ const DiplomaRequestForm = ({
             )}
           </div>
 
-          {/* Commentaire */}
+          {/* Comment */}
           <div>
-            <Label htmlFor="comment">Commentaire</Label>
+            <Label htmlFor="comment">Comment</Label>
             <Textarea
               id="comment"
               value={formData.comment}
               onChange={(e) => setFormData({...formData, comment: e.target.value})}
-              placeholder="Commentaire optionnel sur cette demande..."
+              placeholder="Optional comment on this request..."
               rows={3}
             />
           </div>
 
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? 'Création...' : 'Créer la Demande'}
-          </Button>
+          <div className="flex gap-2">
+            <Button type="button" variant="outline" onClick={onCancel} className="flex-1">
+              Cancel
+            </Button>
+            <Button type="submit" className="flex-1" disabled={loading}>
+              {loading ? 'Creating...' : 'Create Request'}
+            </Button>
+          </div>
         </form>
       </CardContent>
     </Card>
