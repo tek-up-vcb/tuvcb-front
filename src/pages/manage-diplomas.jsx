@@ -14,7 +14,9 @@ import {
 import { Award, FileText, Plus } from 'lucide-react';
 
 // Import components
-import PageHeader from '../components/PageHeader';
+import DashboardSidebar from '../components/DashboardSidebar';
+import FloatingSidebarToggle from '../components/FloatingSidebarToggle';
+import ProtectedRoute from '../components/ProtectedRoute';
 import DiplomaForm from '../components/diplomas/DiplomaForm';
 import DiplomaList from '../components/diplomas/DiplomaList';
 import DiplomaRequestForm from '../components/diplomas/DiplomaRequestForm';
@@ -31,6 +33,10 @@ import AuthService from '../lib/authService';
 const ManageDiplomas = () => {
   const navigate = useNavigate();
   
+  // States for user and UI
+  const [user, setUser] = useState(null);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  
   // States for data
   const [diplomas, setDiplomas] = useState([]);
   const [diplomaRequests, setDiplomaRequests] = useState([]);
@@ -43,6 +49,10 @@ const ManageDiplomas = () => {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [actionLoading, setActionLoading] = useState(false);
+
+  const toggleSidebar = () => {
+    setSidebarCollapsed(!sidebarCollapsed);
+  };
 
   // States for signature
   const [signatureDialog, setSignatureDialog] = useState({
@@ -70,7 +80,10 @@ const ManageDiplomas = () => {
 
       try {
         // Load user profile
-        await loadCurrentUser();
+        const profile = await AuthService.getProfile();
+        setUser(profile);
+        setCurrentUser(profile);
+        
         // Load other data
         await loadData();
       } catch (error) {
@@ -303,20 +316,37 @@ const ManageDiplomas = () => {
 
   if (loading || !currentUser) {
     return (
-      <div className="container mx-auto p-6">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">
-            {loading ? 'Loading data...' : 'Loading user profile...'}
-          </p>
-        </div>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto p-6 max-w-7xl">
-      <PageHeader pageType="diplomas" />
+    <ProtectedRoute requiredRoles={['Admin', 'Teacher']}>
+      <div className="flex min-h-screen">
+        {/* Sidebar */}
+        <DashboardSidebar 
+          user={user} 
+          isCollapsed={sidebarCollapsed}
+          onToggle={toggleSidebar}
+        />
+        
+        {/* Bouton flottant pour rouvrir le sidebar */}
+        <FloatingSidebarToggle 
+          onClick={toggleSidebar}
+          isVisible={sidebarCollapsed}
+        />
+        
+        {/* Main content */}
+        <div className={`flex-1 py-8 transition-all duration-300 ${
+          sidebarCollapsed ? 'ml-0' : 'ml-64'
+        }`}>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="mb-8">
+              <h1 className="text-3xl font-bold text-gray-900">Diploma Management</h1>
+              <p className="mt-2 text-gray-600">Create and manage diplomas, as well as submission requests</p>
+            </div>
 
       {/* Messages */}
       {error && (
@@ -430,7 +460,10 @@ const ManageDiplomas = () => {
           />
         </DialogContent>
       </Dialog>
-    </div>
+          </div>
+        </div>
+      </div>
+    </ProtectedRoute>
   );
 };
 

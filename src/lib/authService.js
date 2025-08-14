@@ -105,6 +105,14 @@ class AuthService {
       localStorage.setItem('auth_token', this.token);
       localStorage.setItem('user_address', address);
       
+      // Récupérer immédiatement les informations du profil
+      try {
+        const profile = await this.getProfile();
+        localStorage.setItem('user_profile', JSON.stringify(profile));
+      } catch (error) {
+        console.warn('Impossible de récupérer le profil utilisateur:', error);
+      }
+      
       return { token: this.token, address };
     } catch (error) {
       console.error('Erreur d\'authentification:', error);
@@ -139,6 +147,7 @@ class AuthService {
     this.token = null;
     localStorage.removeItem('auth_token');
     localStorage.removeItem('user_address');
+    localStorage.removeItem('user_profile');
   }
 
   isAuthenticated() {
@@ -151,6 +160,11 @@ class AuthService {
 
   getUserAddress() {
     return localStorage.getItem('user_address');
+  }
+
+  getUserProfile() {
+    const profile = localStorage.getItem('user_profile');
+    return profile ? JSON.parse(profile) : null;
   }
 }
 
