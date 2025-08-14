@@ -121,9 +121,9 @@ const DiplomaRequestForm = ({
   );
 
   return (
-    <Card>
+    <Card className="border-0 shadow-sm">
       <CardHeader>
-        <CardTitle>New Diploma Request</CardTitle>
+        <CardTitle className="text-lg font-semibold">New Diploma Request</CardTitle>
         <CardDescription>
           Create a diploma submission request for one or more students
         </CardDescription>

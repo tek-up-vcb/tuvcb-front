@@ -7,12 +7,12 @@ import { Edit, Trash2, Plus } from 'lucide-react';
 const DiplomaList = ({ diplomas, onEdit, onDelete, onCreateNew, loading = false }) => {
   if (loading) {
     return (
-      <Card>
+      <Card className="border-0 shadow-sm">
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle>Available Diplomas</CardTitle>
+            <CardTitle className="text-lg font-semibold">Available Diplomas</CardTitle>
             {onCreateNew && (
-              <Button onClick={onCreateNew} size="sm" className="flex items-center gap-2">
+              <Button onClick={onCreateNew} size="sm" className="flex items-center gap-2 border-0 shadow-sm">
                 <Plus className="h-4 w-4" />
                 New Diploma
               </Button>
@@ -31,12 +31,12 @@ const DiplomaList = ({ diplomas, onEdit, onDelete, onCreateNew, loading = false 
 
   if (!diplomas || diplomas.length === 0) {
     return (
-      <Card>
+      <Card className="border-0 shadow-sm">
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle>Available Diplomas</CardTitle>
+            <CardTitle className="text-lg font-semibold">Available Diplomas</CardTitle>
             {onCreateNew && (
-              <Button onClick={onCreateNew} size="sm" className="flex items-center gap-2">
+              <Button onClick={onCreateNew} size="sm" className="flex items-center gap-2 border-0 shadow-sm">
                 <Plus className="h-4 w-4" />
                 New Diploma
               </Button>
@@ -56,12 +56,12 @@ const DiplomaList = ({ diplomas, onEdit, onDelete, onCreateNew, loading = false 
   }
 
   return (
-    <Card>
+    <Card className="border-0 shadow-sm">
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle>Available Diplomas ({diplomas.length})</CardTitle>
+          <CardTitle className="text-lg font-semibold">Available Diplomas ({diplomas.length})</CardTitle>
           {onCreateNew && (
-            <Button onClick={onCreateNew} size="sm" className="flex items-center gap-2">
+            <Button onClick={onCreateNew} size="sm" className="flex items-center gap-2 border-0 shadow-sm">
               <Plus className="h-4 w-4" />
               New Diploma
             </Button>
@@ -69,13 +69,13 @@ const DiplomaList = ({ diplomas, onEdit, onDelete, onCreateNew, loading = false 
         </div>
       </CardHeader>
       <CardContent>
-        <div className="grid gap-4">
+        <div className="grid gap-3">
           {diplomas.map(diploma => (
-            <div key={diploma.id} className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
+            <div key={diploma.id} className="bg-white border border-gray-100 rounded-lg p-4 hover:shadow-sm transition-all duration-200">
               <div className="flex justify-between items-start">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
-                    <h3 className="font-semibold text-lg">{diploma.name}</h3>
+                    <h3 className="font-medium text-base">{diploma.name}</h3>
                     <Badge variant={diploma.isActive ? "default" : "secondary"}>
                       {diploma.isActive ? "Active" : "Inactive"}
                     </Badge>

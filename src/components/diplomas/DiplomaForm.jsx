@@ -42,9 +42,9 @@ const DiplomaForm = ({ onSubmit, onCancel, loading = false }) => {
   };
 
   return (
-    <Card>
+    <Card className="border-0 shadow-sm">
       <CardHeader>
-        <CardTitle>New Diploma</CardTitle>
+        <CardTitle className="text-lg font-semibold">New Diploma</CardTitle>
         <CardDescription>
           Add a new available diploma type
         </CardDescription>

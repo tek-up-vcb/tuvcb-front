@@ -16,11 +16,11 @@ const DiplomaRequestList = ({
 }) => {
   if (loading) {
     return (
-      <Card>
+      <Card className="border-0 shadow-sm">
         <CardHeader>
           <div className="flex justify-between items-center">
             <div>
-              <CardTitle>Diploma Requests</CardTitle>
+              <CardTitle className="text-lg font-semibold">Diploma Requests</CardTitle>
               <CardDescription>Manage diploma submission requests</CardDescription>
             </div>
             {onCreateNew && (
@@ -43,11 +43,11 @@ const DiplomaRequestList = ({
 
   if (!requests || requests.length === 0) {
     return (
-      <Card>
+      <Card className="border-0 shadow-sm">
         <CardHeader>
           <div className="flex justify-between items-center">
             <div>
-              <CardTitle>Diploma Requests</CardTitle>
+              <CardTitle className="text-lg font-semibold">Diploma Requests</CardTitle>
               <CardDescription>Manage diploma submission requests</CardDescription>
             </div>
             {onCreateNew && (
@@ -158,11 +158,11 @@ const DiplomaRequestList = ({
   };
 
   return (
-    <Card>
+    <Card className="border-0 shadow-sm">
       <CardHeader>
         <div className="flex justify-between items-center">
           <div>
-            <CardTitle>Diploma Requests ({requests.length})</CardTitle>
+            <CardTitle className="text-lg font-semibold">Diploma Requests ({requests.length})</CardTitle>
             <CardDescription>Manage diploma submission requests</CardDescription>
           </div>
           {onCreateNew && (
@@ -174,9 +174,9 @@ const DiplomaRequestList = ({
         </div>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
+        <div className="space-y-3">
           {requests.map(request => (
-            <div key={request.id} className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
+            <div key={request.id} className="bg-white border border-gray-100 rounded-lg p-4 hover:shadow-sm transition-all duration-200">
               {/* Request header */}
               <div className="flex justify-between items-start mb-3">
                 <div>
@@ -258,14 +258,14 @@ const DiplomaRequestList = ({
                     <MessageSquare className="h-4 w-4" />
                     <span className="text-sm font-medium">Comment</span>
                   </div>
-                  <p className="text-sm text-gray-600 bg-gray-100 p-2 rounded">
+                  <p className="text-sm text-gray-600 bg-gray-50 p-2 rounded border border-gray-100">
                     {request.comment}
                   </p>
                 </div>
               )}
 
               {/* Actions */}
-              <div className="flex gap-2 pt-2 border-t">
+              <div className="flex gap-2 pt-2 border-t border-gray-100">
                 {canUserSign(request) && onSign && (
                   <Button
                     size="sm"

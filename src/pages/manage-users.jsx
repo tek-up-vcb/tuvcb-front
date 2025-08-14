@@ -41,6 +41,7 @@ import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Plus, UserCheck, Shield, User, Pencil, Trash2 } from 'lucide-react'
 import AuthService from '@/lib/authService'
+import PageHeader from '@/components/PageHeader'
 import { validateEthereumAddressDetailed, formatEthereumAddress } from '@/utils/ethereum'
 import usersService from '@/services/usersService'
 
@@ -262,19 +263,7 @@ export default function ManageUsers() {
   return (
     <div className="min-h-screen py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mb-8">
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">User Management</h1>
-              <p className="mt-2 text-gray-600">Manage system users and their permissions</p>
-            </div>
-            <div className="flex gap-4">
-              <Button onClick={() => navigate('/dashboard')} variant="outline" className="border-0 shadow-sm">
-                Back to Dashboard
-              </Button>
-            </div>
-          </div>
-        </div>
+        <PageHeader pageType="users" />
 
         <Card className="border-0 shadow-sm">
           <CardHeader>

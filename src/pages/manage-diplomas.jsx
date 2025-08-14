@@ -14,6 +14,7 @@ import {
 import { Award, FileText, Plus } from 'lucide-react';
 
 // Import components
+import PageHeader from '../components/PageHeader';
 import DiplomaForm from '../components/diplomas/DiplomaForm';
 import DiplomaList from '../components/diplomas/DiplomaList';
 import DiplomaRequestForm from '../components/diplomas/DiplomaRequestForm';
@@ -314,17 +315,8 @@ const ManageDiplomas = () => {
   }
 
   return (
-    <div className="container mx-auto p-6">
-      {/* En-tête */}
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
-          <Award className="h-8 w-8" />
-          Diploma Management
-        </h1>
-        <p className="text-gray-600 mt-2">
-          Create and manage diplomas, as well as submission requests
-        </p>
-      </div>
+    <div className="container mx-auto p-6 max-w-7xl">
+      <PageHeader pageType="diplomas" />
 
       {/* Messages */}
       {error && (
@@ -340,13 +332,19 @@ const ManageDiplomas = () => {
       )}
 
       {/* Contenu principal */}
-      <Tabs defaultValue="requests" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="requests" className="flex items-center gap-2">
+      <Tabs defaultValue="requests" className="space-y-8">
+        <TabsList className="grid w-full grid-cols-2 bg-gray-50 p-1 rounded-lg">
+          <TabsTrigger 
+            value="requests" 
+            className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm"
+          >
             <FileText className="h-4 w-4" />
             Diploma Requests
           </TabsTrigger>
-          <TabsTrigger value="diplomas" className="flex items-center gap-2">
+          <TabsTrigger 
+            value="diplomas" 
+            className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm"
+          >
             <Award className="h-4 w-4" />
             Available Diplomas
           </TabsTrigger>

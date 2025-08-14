@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import AuthService from '@/lib/authService'
+import PageHeader from '@/components/PageHeader'
 import PromotionsSection from '@/components/students/PromotionsSection'
 import StudentsSection from '@/components/students/StudentsSection'
 import { useStudentsData } from '@/hooks/students/useStudentsData'
@@ -92,19 +93,7 @@ export default function ManageStudents() {
   return (
     <div className="min-h-screen py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mb-8">
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Student Management</h1>
-              <p className="mt-2 text-gray-600">Manage students and their promotions</p>
-            </div>
-            <div className="flex gap-4">
-              <Button onClick={() => navigate('/dashboard')} variant="outline" className="border-0 shadow-sm">
-                Back to Dashboard
-              </Button>
-            </div>
-          </div>
-        </div>
+        <PageHeader pageType="students" />
 
         <PromotionsSection
           promotions={promotions}
