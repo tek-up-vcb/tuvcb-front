@@ -9,20 +9,26 @@ import ManageDiplomas from './pages/manage-diplomas'
 import About from './pages/about'
 import Terms from './pages/terms/index'
 import './App.css'
+import DashboardLayout from '@/components/DashboardLayout'
 
 function App() {
   return (
     <ThemeProvider>
       <Router>
         <Routes>
+          {/* Public pages */}
           <Route path="/" element={<Index />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/manage-users" element={<ManageUsers />} />
-          <Route path="/manage-students" element={<ManageStudents />} />
-          <Route path="/manage-diplomas" element={<ManageDiplomas />} />
           <Route path="/about" element={<About />} />
           <Route path="/terms" element={<Terms />} />
+
+          {/* Dashboard area with persistent sidebar */}
+          <Route element={<DashboardLayout />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/manage-users" element={<ManageUsers />} />
+            <Route path="/manage-students" element={<ManageStudents />} />
+            <Route path="/manage-diplomas" element={<ManageDiplomas />} />
+          </Route>
         </Routes>
       </Router>
     </ThemeProvider>

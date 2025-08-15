@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react' 
+import { useNavigate } from 'react-router-dom' 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import {
@@ -41,8 +41,7 @@ import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Plus, UserCheck, Shield, User, Pencil, Trash2 } from 'lucide-react'
 import AuthService from '@/lib/authService'
-import DashboardSidebar from '@/components/DashboardSidebar'
-import FloatingSidebarToggle from '@/components/FloatingSidebarToggle'
+import { useDashboardLayout } from '@/components/DashboardLayout' 
 import ProtectedRoute from '@/components/ProtectedRoute'
 import { validateEthereumAddressDetailed, formatEthereumAddress } from '@/utils/ethereum'
 import usersService from '@/services/usersService'
@@ -51,7 +50,6 @@ export default function ManageUsers() {
   const [user, setUser] = useState(null)
   const [users, setUsers] = useState([])
   const [loading, setLoading] = useState(true)
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [dialogOpen, setDialogOpen] = useState(false)
   const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false)
   const [editingUser, setEditingUser] = useState(null)
@@ -65,10 +63,7 @@ export default function ManageUsers() {
   const [formErrors, setFormErrors] = useState({})
   const [submitLoading, setSubmitLoading] = useState(false)
   const navigate = useNavigate()
-
-  const toggleSidebar = () => {
-    setSidebarCollapsed(!sidebarCollapsed)
-  }
+  const layout = useDashboardLayout?.() || {}
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -272,37 +267,19 @@ export default function ManageUsers() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+      <div className="min-h-[60vh] flex items-center justify-center"> 
+        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600"></div> 
       </div>
     )
   }
 
   return (
     <ProtectedRoute requiredRoles={['Admin']}>
-      <div className="flex min-h-screen">
-        {/* Sidebar */}
-        <DashboardSidebar 
-          user={user} 
-          isCollapsed={sidebarCollapsed}
-          onToggle={toggleSidebar}
-        />
-        
-        {/* Bouton flottant pour rouvrir le sidebar */}
-        <FloatingSidebarToggle 
-          onClick={toggleSidebar}
-          isVisible={sidebarCollapsed}
-        />
-        
-        {/* Main content */}
-        <div className={`flex-1 py-8 transition-all duration-300 ${
-          sidebarCollapsed ? 'ml-0' : 'ml-64'
-        }`}>
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="mb-8">
-              <h1 className="text-3xl font-bold text-gray-900">User Management</h1>
-              <p className="mt-2 text-gray-600">Manage system users and their permissions</p>
-            </div>
+      <div>
+        <div className="mb-8"> 
+          <h1 className="text-3xl font-bold text-gray-900">User Management</h1> 
+          <p className="mt-2 text-gray-600">Manage system users and their permissions</p> 
+        </div> 
 
         <Card className="border-0 shadow-sm">
           <CardHeader>
@@ -546,9 +523,7 @@ export default function ManageUsers() {
             )}
           </CardContent>
         </Card>
-          </div>
-        </div>
-      </div>
+  </div> 
     </ProtectedRoute>
   )
 }
