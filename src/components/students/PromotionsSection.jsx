@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
+import { Badge } from '@/components/ui/badge'
 import { Plus, Search, ChevronDown, ChevronUp, Pencil, Trash2 } from 'lucide-react'
 import {
   Dialog,
@@ -72,22 +73,22 @@ export default function PromotionsSection({
           <div className="flex gap-3 items-center">
             {/* Search bar for promotions */}
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <Input
                 placeholder="Search promotions..."
                 value={promotionSearchTerm}
                 onChange={(e) => setPromotionSearchTerm(e.target.value)}
-                className="pl-10 w-64 border-0 shadow-sm bg-gray-50 focus:bg-white"
+                className="pl-10 w-64"
               />
             </div>
             <Dialog open={promotionDialogOpen} onOpenChange={setPromotionDialogOpen}>
               <DialogTrigger asChild>
-                <Button className="gap-2 border-0 shadow-sm" onClick={() => setEditingPromotion(null)}>
+                <Button className="gap-2" onClick={() => setEditingPromotion(null)}>
                   <Plus className="h-4 w-4" />
                   Add Promotion
                 </Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-[425px] border-0 shadow-lg">
+              <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
                   <DialogTitle>
                     {editingPromotion ? 'Edit Promotion' : 'New Promotion'}
@@ -115,7 +116,7 @@ export default function PromotionsSection({
             ).length;
             
             return (
-              <div key={promotion.id} className="border-0 shadow-sm rounded-lg p-4 bg-white">
+              <div key={promotion.id} className="rounded-lg p-4 bg-card border border-border">
                 <div className="flex justify-between items-start mb-2">
                   <h3 className="font-semibold">{promotion.nom}</h3>
                   <div className="flex gap-1">
@@ -123,7 +124,6 @@ export default function PromotionsSection({
                       variant="ghost"
                       size="sm"
                       onClick={() => openEditPromotionDialog(promotion)}
-                      className="border-0"
                     >
                       <Pencil className="h-4 w-4" />
                     </Button>
@@ -155,13 +155,13 @@ export default function PromotionsSection({
                   </div>
                 </div>
                 {promotion.description && (
-                  <p className="text-sm text-gray-600 mb-2">{promotion.description}</p>
+                  <p className="text-sm text-muted-foreground mb-2">{promotion.description}</p>
                 )}
                 <div className="flex justify-between items-center">
-                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border-0 ${getPromotionBadgeClass(promotion.annee)}`}>
+                  <Badge variant={getPromotionBadgeClass(promotion.annee)}>
                     {promotion.annee}
-                  </span>
-                  <span className="text-sm text-gray-500">
+                  </Badge>
+                  <span className="text-sm text-muted-foreground">
                     {studentCount} student{studentCount > 1 ? 's' : ''}
                   </span>
                 </div>

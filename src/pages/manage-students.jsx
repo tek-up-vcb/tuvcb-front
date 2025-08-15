@@ -81,11 +81,11 @@ export default function ManageStudents() {
   const getPromotionBadgeClass = (annee) => {
     const currentYear = new Date().getFullYear()
     if (annee === currentYear) {
-      return 'bg-green-100 text-green-800'
+      return 'default' // utilise le variant par défaut
     } else if (annee > currentYear) {
-      return 'bg-blue-100 text-blue-800'
+      return 'secondary' // utilise le variant secondary
     } else {
-      return 'bg-gray-100 text-gray-800'
+      return 'outline' // utilise le variant outline
     }
   }
 

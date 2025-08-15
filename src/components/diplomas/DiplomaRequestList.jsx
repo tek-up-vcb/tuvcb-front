@@ -16,7 +16,7 @@ const DiplomaRequestList = ({
 }) => {
   if (loading) {
     return (
-      <Card className="border-0 shadow-sm">
+      <Card>
         <CardHeader>
           <div className="flex justify-between items-center">
             <div>
@@ -24,7 +24,7 @@ const DiplomaRequestList = ({
               <CardDescription>Manage diploma submission requests</CardDescription>
             </div>
             {onCreateNew && (
-              <Button onClick={onCreateNew} className="gap-2 border-0 shadow-sm">
+              <Button onClick={onCreateNew} className="gap-2">
                 <Plus className="h-4 w-4" />
                 New Request
               </Button>
@@ -33,8 +33,8 @@ const DiplomaRequestList = ({
         </CardHeader>
         <CardContent>
           <div className="text-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="mt-2 text-gray-600">Loading...</p>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+            <p className="mt-2 text-muted-foreground">Loading...</p>
           </div>
         </CardContent>
       </Card>
@@ -43,7 +43,7 @@ const DiplomaRequestList = ({
 
   if (!requests || requests.length === 0) {
     return (
-      <Card className="border-0 shadow-sm">
+      <Card>
         <CardHeader>
           <div className="flex justify-between items-center">
             <div>
@@ -51,7 +51,7 @@ const DiplomaRequestList = ({
               <CardDescription>Manage diploma submission requests</CardDescription>
             </div>
             {onCreateNew && (
-              <Button onClick={onCreateNew} className="gap-2 border-0 shadow-sm">
+              <Button onClick={onCreateNew} className="gap-2">
                 <Plus className="h-4 w-4" />
                 New Request
               </Button>
@@ -60,12 +60,12 @@ const DiplomaRequestList = ({
         </CardHeader>
         <CardContent>
           <div className="text-center py-8">
-            <p className="text-gray-600">No diploma requests</p>
-            <p className="text-sm text-gray-500 mt-1">
+            <p className="text-muted-foreground">No diploma requests</p>
+            <p className="text-sm text-muted-foreground mt-1">
               Create your first request to get started
             </p>
             {onCreateNew && (
-              <Button onClick={onCreateNew} className="mt-4 gap-2 border-0 shadow-sm">
+              <Button onClick={onCreateNew} className="mt-4 gap-2">
                 <Plus className="h-4 w-4" />
                 Create Request
               </Button>
@@ -158,7 +158,7 @@ const DiplomaRequestList = ({
   };
 
   return (
-    <Card className="border-0 shadow-sm">
+    <Card>
       <CardHeader>
         <div className="flex justify-between items-center">
           <div>
@@ -166,7 +166,7 @@ const DiplomaRequestList = ({
             <CardDescription>Manage diploma submission requests</CardDescription>
           </div>
           {onCreateNew && (
-            <Button onClick={onCreateNew} className="gap-2 border-0 shadow-sm">
+            <Button onClick={onCreateNew} className="gap-2">
               <Plus className="h-4 w-4" />
               New Request
             </Button>
@@ -176,12 +176,12 @@ const DiplomaRequestList = ({
       <CardContent>
         <div className="space-y-3">
           {requests.map(request => (
-            <div key={request.id} className="bg-white border border-gray-100 rounded-lg p-4 hover:shadow-sm transition-all duration-200">
+            <div key={request.id} className="bg-card border border-0 rounded-lg p-4 hover:bg-muted/50 transition-all duration-200">
               {/* Request header */}
               <div className="flex justify-between items-start mb-3">
                 <div>
                   <h3 className="font-semibold text-lg">{request.diploma?.name}</h3>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-muted-foreground">
                     {request.diploma?.level} - {request.diploma?.field}
                   </p>
                 </div>
@@ -258,14 +258,14 @@ const DiplomaRequestList = ({
                     <MessageSquare className="h-4 w-4" />
                     <span className="text-sm font-medium">Comment</span>
                   </div>
-                  <p className="text-sm text-gray-600 bg-gray-50 p-2 rounded border border-gray-100">
+                  <p className="text-sm text-muted-foreground bg-muted p-2 rounded border border-border">
                     {request.comment}
                   </p>
                 </div>
               )}
 
               {/* Actions */}
-              <div className="flex gap-2 pt-2 border-t border-gray-100">
+              <div className="flex gap-2 pt-2 border-t border-border">
                 {canUserSign(request) && onSign && (
                   <Button
                     size="sm"

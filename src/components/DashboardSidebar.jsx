@@ -13,7 +13,8 @@ import {
   DropdownMenu, 
   DropdownMenuContent, 
   DropdownMenuItem, 
-  DropdownMenuTrigger 
+  DropdownMenuTrigger,
+  DropdownMenuSeparator
 } from '@/components/ui/dropdown-menu'
 import { 
   LayoutDashboard, 
@@ -28,11 +29,13 @@ import {
   PanelLeftClose,
   PanelLeftOpen
 } from 'lucide-react'
+import { ThemeToggleMenuItem } from '@/components/ThemeToggle'
 import AuthService from '@/lib/authService'
 
 export default function DashboardSidebar({ user, isCollapsed = false, onToggle }) {
   const navigate = useNavigate()
   const location = useLocation()
+  
   // Pour les admins, selectedRole permet de voir comme un autre rôle
   // Pour les autres, selectedRole est toujours leur vrai rôle
   const [selectedRole, setSelectedRole] = useState(user?.role || 'Guest')
@@ -284,7 +287,7 @@ export default function DashboardSidebar({ user, isCollapsed = false, onToggle }
           </Button>
         </div>
 
-        <div className="h-px bg-gray-200 mx-4" />
+        <div className="h-px bg-border mx-4" />
 
         {/* Profil utilisateur */}
         <div className="p-4">
@@ -316,6 +319,9 @@ export default function DashboardSidebar({ user, isCollapsed = false, onToggle }
                 <DropdownMenuItem onClick={() => navigate('/settings')}>
                   Account Settings
                 </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <ThemeToggleMenuItem />
+                <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleLogout} className="text-red-600">
                   Logout
                 </DropdownMenuItem>

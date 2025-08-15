@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { ThemeProvider } from './context/ThemeContext'
 import Index from './pages/index'
 import Login from './pages/login'
 import Dashboard from './pages/dashboard'
@@ -11,18 +12,20 @@ import './App.css'
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Index />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/manage-users" element={<ManageUsers />} />
-        <Route path="/manage-students" element={<ManageStudents />} />
-        <Route path="/manage-diplomas" element={<ManageDiplomas />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/terms" element={<Terms />} />
-      </Routes>
-    </Router>
+    <ThemeProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Index />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/manage-users" element={<ManageUsers />} />
+          <Route path="/manage-students" element={<ManageStudents />} />
+          <Route path="/manage-diplomas" element={<ManageDiplomas />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/terms" element={<Terms />} />
+        </Routes>
+      </Router>
+    </ThemeProvider>
   )
 }
 

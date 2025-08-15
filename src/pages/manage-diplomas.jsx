@@ -363,17 +363,17 @@ const ManageDiplomas = () => {
 
       {/* Contenu principal */}
       <Tabs defaultValue="requests" className="space-y-8">
-        <TabsList className="grid w-full grid-cols-2 bg-gray-50 p-1 rounded-lg">
+        <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger 
             value="requests" 
-            className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm"
+            className="flex items-center gap-2"
           >
             <FileText className="h-4 w-4" />
             Diploma Requests
           </TabsTrigger>
           <TabsTrigger 
             value="diplomas" 
-            className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm"
+            className="flex items-center gap-2"
           >
             <Award className="h-4 w-4" />
             Available Diplomas

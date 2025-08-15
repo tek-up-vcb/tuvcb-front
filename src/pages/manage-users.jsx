@@ -468,7 +468,7 @@ export default function ManageUsers() {
               </TableHeader>
               <TableBody>
                 {users.map((user) => (
-                  <TableRow key={user.id} className="border-0 hover:bg-gray-50">
+                  <TableRow key={user.id} className="hover:bg-muted/50">
                     <TableCell>
                       <Checkbox
                         checked={selectedUsers.has(user.id)}

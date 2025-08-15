@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
+import { Badge } from '@/components/ui/badge'
 import {
   Table,
   TableBody,
@@ -156,7 +157,7 @@ export default function StudentsSection({
                     <div className="grid gap-4 py-4">
                       <div className="grid gap-2">
                         <Label>Promotions (multiple selection)</Label>
-                        <div className="max-h-48 overflow-y-auto border-0 shadow-sm rounded-md p-3 space-y-2 bg-gray-50">
+                        <div className="max-h-48 overflow-y-auto rounded-md p-3 space-y-2 bg-muted">
                           {promotions.map((promotion) => (
                             <div key={promotion.id} className="flex items-center space-x-2">
                               <Checkbox
@@ -215,10 +216,10 @@ export default function StudentsSection({
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                      <AlertDialogCancel className="border-0">Cancel</AlertDialogCancel>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
                       <AlertDialogAction 
                         onClick={handleBulkDeleteSubmit}
-                        className="bg-red-600 hover:bg-red-700 border-0"
+                        className="bg-destructive hover:bg-destructive/90"
                         disabled={submitLoading}
                       >
                         {submitLoading ? 'Deleting...' : 'Delete'}
@@ -231,21 +232,21 @@ export default function StudentsSection({
             
             {/* Search bar for students */}
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <Input
                 placeholder="Search students..."
                 value={studentSearchTerm}
                 onChange={(e) => setStudentSearchTerm(e.target.value)}
-                className="pl-10 w-64 border-0 shadow-sm bg-gray-50 focus:bg-white"
+                className="pl-10 w-64"
               />
             </div>
             
             <Select value={selectedPromotion} onValueChange={setSelectedPromotion}>
-              <SelectTrigger className="w-48 border-0 shadow-sm">
+              <SelectTrigger className="w-48">
                 <Filter className="h-4 w-4 mr-2" />
                 <SelectValue placeholder="Filter by promotion" />
               </SelectTrigger>
-              <SelectContent className="border-0 shadow-lg">
+              <SelectContent>
                 <SelectItem value="all">All Promotions</SelectItem>
                 {promotions.map((promotion) => (
                   <SelectItem key={promotion.id} value={promotion.id}>
@@ -304,7 +305,7 @@ export default function StudentsSection({
           </TableHeader>
           <TableBody>
             {filteredStudents.map((student) => (
-              <TableRow key={student.id} className="border-0 hover:bg-gray-50">
+              <TableRow key={student.id} className="hover:bg-muted/50">
                 <TableCell>
                   <Checkbox
                     checked={selectedStudents.has(student.id)}
@@ -313,7 +314,7 @@ export default function StudentsSection({
                   />
                 </TableCell>
                 <TableCell className="font-medium">
-                  <code className="relative rounded bg-muted px-2 py-1 font-mono text-sm border-0">
+                  <code className="relative rounded bg-muted px-2 py-1 font-mono text-sm">
                     {student.studentId}
                   </code>
                 </TableCell>
@@ -324,12 +325,12 @@ export default function StudentsSection({
                   {student.promotions && student.promotions.length > 0 ? (
                     <div className="flex flex-wrap gap-1">
                       {student.promotions.map((promotion) => (
-                        <span 
+                        <Badge 
                           key={promotion.id}
-                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border-0 ${getPromotionBadgeClass(promotion.annee)}`}
+                          variant={getPromotionBadgeClass(promotion.annee)}
                         >
                           {promotion.nom}
-                        </span>
+                        </Badge>
                       ))}
                     </div>
                   ) : (
@@ -362,10 +363,10 @@ export default function StudentsSection({
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                          <AlertDialogCancel className="border-0">Cancel</AlertDialogCancel>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
                           <AlertDialogAction 
                             onClick={() => onStudentDelete(student.id)}
-                            className="bg-red-600 hover:bg-red-700 border-0"
+                            className="bg-destructive hover:bg-destructive/90"
                           >
                             Delete
                           </AlertDialogAction>

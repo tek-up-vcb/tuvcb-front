@@ -7,12 +7,12 @@ import { Edit, Trash2, Plus } from 'lucide-react';
 const DiplomaList = ({ diplomas, onEdit, onDelete, onCreateNew, loading = false }) => {
   if (loading) {
     return (
-      <Card className="border-0 shadow-sm">
+      <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="text-lg font-semibold">Available Diplomas</CardTitle>
             {onCreateNew && (
-              <Button onClick={onCreateNew} size="sm" className="flex items-center gap-2 border-0 shadow-sm">
+              <Button onClick={onCreateNew} size="sm" className="flex items-center gap-2">
                 <Plus className="h-4 w-4" />
                 New Diploma
               </Button>
@@ -21,8 +21,8 @@ const DiplomaList = ({ diplomas, onEdit, onDelete, onCreateNew, loading = false 
         </CardHeader>
         <CardContent>
           <div className="text-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="mt-2 text-gray-600">Loading...</p>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+            <p className="mt-2 text-muted-foreground">Loading...</p>
           </div>
         </CardContent>
       </Card>
@@ -31,12 +31,12 @@ const DiplomaList = ({ diplomas, onEdit, onDelete, onCreateNew, loading = false 
 
   if (!diplomas || diplomas.length === 0) {
     return (
-      <Card className="border-0 shadow-sm">
+      <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="text-lg font-semibold">Available Diplomas</CardTitle>
             {onCreateNew && (
-              <Button onClick={onCreateNew} size="sm" className="flex items-center gap-2 border-0 shadow-sm">
+              <Button onClick={onCreateNew} size="sm" className="flex items-center gap-2">
                 <Plus className="h-4 w-4" />
                 New Diploma
               </Button>
@@ -45,8 +45,8 @@ const DiplomaList = ({ diplomas, onEdit, onDelete, onCreateNew, loading = false 
         </CardHeader>
         <CardContent>
           <div className="text-center py-8">
-            <p className="text-gray-600">No diplomas available</p>
-            <p className="text-sm text-gray-500 mt-1">
+            <p className="text-muted-foreground">No diplomas available</p>
+            <p className="text-sm text-muted-foreground mt-1">
               Create your first diploma to get started
             </p>
           </div>
@@ -56,12 +56,12 @@ const DiplomaList = ({ diplomas, onEdit, onDelete, onCreateNew, loading = false 
   }
 
   return (
-    <Card className="border-0 shadow-sm">
+    <Card>
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg font-semibold">Available Diplomas ({diplomas.length})</CardTitle>
           {onCreateNew && (
-            <Button onClick={onCreateNew} size="sm" className="flex items-center gap-2 border-0 shadow-sm">
+            <Button onClick={onCreateNew} size="sm" className="flex items-center gap-2">
               <Plus className="h-4 w-4" />
               New Diploma
             </Button>
@@ -71,7 +71,7 @@ const DiplomaList = ({ diplomas, onEdit, onDelete, onCreateNew, loading = false 
       <CardContent>
         <div className="grid gap-3">
           {diplomas.map(diploma => (
-            <div key={diploma.id} className="bg-white border border-gray-100 rounded-lg p-4 hover:shadow-sm transition-all duration-200">
+            <div key={diploma.id} className="bg-card border-0 rounded-lg p-4 hover:bg-muted/50 transition-all duration-200">
               <div className="flex justify-between items-start">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
