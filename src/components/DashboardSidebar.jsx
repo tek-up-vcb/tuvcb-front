@@ -31,6 +31,7 @@ import {
 } from 'lucide-react'
 import { ThemeToggleMenuItem } from '@/components/ThemeToggle'
 import AuthService from '@/lib/authService'
+import logo from '@/assets/logo.png'
 
 export default function DashboardSidebar({ user, isCollapsed = false, onToggle }) {
   const navigate = useNavigate()
@@ -161,11 +162,17 @@ export default function DashboardSidebar({ user, isCollapsed = false, onToggle }
     <aside className={`fixed left-0 top-0 z-40 flex flex-col h-screen bg-background shadow-lg transition-transform duration-300 ${
       isCollapsed ? '-translate-x-full' : 'translate-x-0'
     } w-64 overflow-hidden`}>
-      {/* Logo et titre */}
+      {/* Logo */}
       <div className="flex items-center justify-between p-6 flex-shrink-0">
-        <div className="text-center flex-1">
-          <h1 className="text-xl font-bold text-blue-600">TEK-UP</h1>
-          <p className="text-sm text-muted-foreground">University</p>
+        <div className="flex-1 flex items-center justify-center">
+          <button
+            type="button"
+            onClick={() => navigate('/')}
+            className="focus:outline-none"
+            title="Go to landing"
+          >
+            <img src={logo} alt="TEK-UP University" className="h-10 w-auto cursor-pointer" />
+          </button>
         </div>
         <Button
           variant="ghost"
