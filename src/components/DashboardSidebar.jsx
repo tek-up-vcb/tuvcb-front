@@ -140,7 +140,8 @@ export default function DashboardSidebar({ user, isCollapsed = false, onToggle }
   }
 
   const isActivePath = (path) => {
-    return location.pathname === path
+    // Actif si la route exacte ou une sous-route (ex: /manage-users/123)
+    return location.pathname === path || location.pathname.startsWith(path + '/')
   }
 
   const getUserDisplayName = () => {
@@ -159,45 +160,64 @@ export default function DashboardSidebar({ user, isCollapsed = false, onToggle }
   }
 
   return (
-    <aside className={`fixed left-0 top-0 z-40 flex flex-col h-screen bg-background shadow-lg transition-transform duration-300 ${
-      isCollapsed ? '-translate-x-full' : 'translate-x-0'
-    } w-64 overflow-hidden`}>
+    <aside
+      className={`fixed left-0 top-0 z-40 flex h-screen flex-col bg-background/95 backdrop-blur-sm border-r border-border/70 shadow-soft transition-all duration-300 transform ${
+        isCollapsed
+          ? 'w-16 -translate-x-full sm:translate-x-0'
+          : 'w-64 translate-x-0'
+      } max-w-full overflow-hidden`}
+    >
       {/* Logo */}
-      <div className="flex items-center justify-between p-6 flex-shrink-0">
-        <div className="flex-1 flex items-center justify-center">
-          <button
-            type="button"
-            onClick={() => navigate('/')}
-            className="focus:outline-none"
-            title="Go to landing"
-          >
-            <img src={logo} alt="TEK-UP University" className="h-10 w-auto cursor-pointer" />
-          </button>
-        </div>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-8 w-8 p-0 ml-2"
-          onClick={onToggle}
+      <div className="flex items-center justify-between p-4 flex-shrink-0">
+        <button
+          type="button"
+          onClick={() => navigate('/')}
+          className={`focus:outline-none ${isCollapsed ? 'mx-auto' : ''}`}
+          title="Go to landing"
         >
-          <PanelLeftClose className="h-4 w-4" />
-          <span className="sr-only">Close sidebar</span>
-        </Button>
+          <img src={logo} alt="TEK-UP University" className={`${isCollapsed ? 'h-8' : 'h-10'} w-auto max-w-[90%] object-contain cursor-pointer`} />
+        </button>
+        {!isCollapsed && (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-8 w-8 p-0 ml-2"
+            onClick={onToggle}
+            title="Collapse sidebar"
+          >
+            <PanelLeftClose className="h-4 w-4" />
+            <span className="sr-only">Close sidebar</span>
+          </Button>
+        )}
+        {isCollapsed && (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="absolute right-3 h-8 w-8 p-0"
+            onClick={onToggle}
+            title="Expand sidebar"
+          >
+            <PanelLeftOpen className="h-4 w-4" />
+            <span className="sr-only">Open sidebar</span>
+          </Button>
+        )}
       </div>
 
       {/* Sélecteur de rôle - seulement visible pour les admins */}
       {shouldShowRoleSelector() && (
-        <div className="p-4 flex-shrink-0">
-          <div className="mb-2">
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              View as
-            </p>
-          </div>
+        <div className="p-3 flex-shrink-0 min-w-0">
+          {!isCollapsed && (
+            <div className="mb-2">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                View as
+              </p>
+            </div>
+          )}
           <Select value={selectedRole} onValueChange={handleRoleChange}>
-            <SelectTrigger className="w-full">
+            <SelectTrigger className={`${isCollapsed ? 'justify-center' : 'w-full'} min-w-0`} title={isCollapsed ? `View as: ${selectedRole}` : undefined}>
               <div className="flex items-center gap-2">
                 <BookOpen className="h-4 w-4" />
-                <SelectValue />
+                {!isCollapsed && <SelectValue />}
               </div>
             </SelectTrigger>
             <SelectContent>
@@ -211,22 +231,24 @@ export default function DashboardSidebar({ user, isCollapsed = false, onToggle }
 
       {/* Indicateur de rôle pour les non-admins */}
       {!shouldShowRoleSelector() && (
-        <div className="p-4 flex-shrink-0">
-          <div className="flex items-center gap-2 px-2 py-2 bg-muted/50 rounded-md">
+        <div className="p-3 flex-shrink-0">
+          <div className={`items-center gap-2 px-2 py-2 bg-muted/50 rounded-md ${isCollapsed ? 'flex justify-center' : 'flex'}`} title={isCollapsed ? (user?.role || 'Guest') : undefined}>
             <BookOpen className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm font-medium">{user?.role || 'Guest'}</span>
+            {!isCollapsed && <span className="text-sm font-medium">{user?.role || 'Guest'}</span>}
           </div>
         </div>
       )}
 
       {/* Navigation principale - avec scroll */}
-      <div className="flex-1 overflow-y-auto px-4">
+  <div className="flex-1 overflow-y-auto px-2">
         {/* Section Platform */}
         <div className="mb-6">
-          <p className="px-2 mb-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-            Platform
-          </p>
-          <div className="space-y-1">
+          {!isCollapsed && (
+            <p className="px-2 mb-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              Platform
+            </p>
+          )}
+          <div className={`space-y-1 ${isCollapsed ? 'flex flex-col items-center gap-2 space-y-0' : ''}`}>
             {navigationItems.map((item) => {
               const Icon = item.icon
               const isActive = isActivePath(item.path)
@@ -234,12 +256,13 @@ export default function DashboardSidebar({ user, isCollapsed = false, onToggle }
               return (
                 <Button
                   key={item.path}
-                  variant={isActive ? "secondary" : "ghost"}
-                  className="w-full justify-start gap-2 h-9"
+                  variant="ghost"
+                  title={isCollapsed ? item.title : undefined}
+                  className={`${isCollapsed ? 'h-10 w-10 p-0 justify-center rounded-md' : 'w-full justify-start px-3 gap-2 h-9 rounded-md'} ${isActive ? 'bg-accent/15 text-foreground' : 'hover:bg-accent/10'} transition-colors`}
                   onClick={() => handleNavigation(item.path)}
                 >
                   <Icon className="h-4 w-4" />
-                  {item.title}
+                  {!isCollapsed && <span>{item.title}</span>}
                 </Button>
               )
             })}
@@ -248,10 +271,12 @@ export default function DashboardSidebar({ user, isCollapsed = false, onToggle }
 
         {/* Section Tools */}
         <div className="mb-6">
-          <p className="px-2 mb-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-            Tools
-          </p>
-          <div className="space-y-1">
+          {!isCollapsed && (
+            <p className="px-2 mb-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              Tools
+            </p>
+          )}
+          <div className={`space-y-1 ${isCollapsed ? 'flex flex-col items-center gap-2 space-y-0' : ''}`}>
             {toolItems.map((item) => {
               const Icon = item.icon
               const isActive = isActivePath(item.path)
@@ -259,12 +284,13 @@ export default function DashboardSidebar({ user, isCollapsed = false, onToggle }
               return (
                 <Button
                   key={item.path}
-                  variant={isActive ? "secondary" : "ghost"}
-                  className="w-full justify-start gap-2 h-9"
+                  variant="ghost"
+                  title={isCollapsed ? item.title : undefined}
+                  className={`${isCollapsed ? 'h-10 w-10 p-0 justify-center rounded-md' : 'w-full justify-start px-3 gap-2 h-9 rounded-md'} ${isActive ? 'bg-accent/15 text-foreground' : 'hover:bg-accent/10'} transition-colors`}
                   onClick={() => navigate(item.path)}
                 >
                   <Icon className="h-4 w-4" />
-                  {item.title}
+                  {!isCollapsed && <span>{item.title}</span>}
                 </Button>
               )
             })}
@@ -275,65 +301,70 @@ export default function DashboardSidebar({ user, isCollapsed = false, onToggle }
       {/* Section inférieure */}
       <div className="flex-shrink-0">
         {/* Settings et Help */}
-        <div className="p-4 space-y-1">
+        <div className={`p-4 ${isCollapsed ? 'flex flex-col items-center gap-2' : 'space-y-1'}`}>
           <Button
             variant="ghost"
-            className="w-full justify-start gap-2 h-9"
+            title={isCollapsed ? 'Settings' : undefined}
+            className={`${isCollapsed ? 'h-10 w-10 p-0 justify-center rounded-md' : 'w-full justify-start gap-2 h-9 rounded-md'} hover:bg-accent/10`}
             onClick={() => navigate('/settings')}
           >
             <Settings className="h-4 w-4" />
-            Settings
+            {!isCollapsed && 'Settings'}
           </Button>
           <Button
             variant="ghost"
-            className="w-full justify-start gap-2 h-9"
+            title={isCollapsed ? 'Get Help' : undefined}
+            className={`${isCollapsed ? 'h-10 w-10 p-0 justify-center rounded-md' : 'w-full justify-start gap-2 h-9 rounded-md'} hover:bg-accent/10`}
             onClick={() => navigate('/help')}
           >
             <HelpCircle className="h-4 w-4" />
-            Get Help
+            {!isCollapsed && 'Get Help'}
           </Button>
         </div>
 
-        <div className="h-px bg-border mx-4" />
+  <div className="h-px bg-border mx-4" />
 
         {/* Profil utilisateur */}
         <div className="p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
+          <div className={`items-center ${isCollapsed ? 'flex justify-center' : 'flex justify-between'}`}>
+            <div className={`items-center ${isCollapsed ? 'flex' : 'flex gap-3'}`}>
               <Avatar className="h-8 w-8">
                 <AvatarImage src="" />
                 <AvatarFallback className="bg-blue-100 text-blue-600 text-xs font-medium">
                   {getUserDisplayName().split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
                 </AvatarFallback>
               </Avatar>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">{getUserDisplayName()}</p>
-                <p className="text-xs text-muted-foreground font-mono">{getUserAddress()}</p>
-              </div>
+              {!isCollapsed && (
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium truncate">{getUserDisplayName()}</p>
+                  <p className="text-xs text-muted-foreground font-mono">{getUserAddress()}</p>
+                </div>
+              )}
             </div>
-            
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                  <MoreVertical className="h-4 w-4" />
-                  <span className="sr-only">Open user menu</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuItem onClick={() => navigate('/profile')}>
-                  View Profile
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate('/settings')}>
-                  Account Settings
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <ThemeToggleMenuItem />
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleLogout} className="text-red-600">
-                  Logout
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            {!isCollapsed && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                    <MoreVertical className="h-4 w-4" />
+                    <span className="sr-only">Open user menu</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  <DropdownMenuItem onClick={() => navigate('/profile')}>
+                    View Profile
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate('/settings')}>
+                    Account Settings
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <ThemeToggleMenuItem />
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleLogout} className="text-red-600">
+                    Logout
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
           </div>
         </div>
       </div>

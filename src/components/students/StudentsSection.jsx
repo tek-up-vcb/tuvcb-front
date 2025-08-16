@@ -3,6 +3,8 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
+import Skeleton from '@/components/ui/Skeleton'
+import EmptyState from '@/components/ui/EmptyState'
 import {
   Table,
   TableBody,
@@ -176,7 +178,7 @@ export default function StudentsSection({
   return (
     <Card className="border-0 shadow-sm">
       <CardHeader>
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
             <CardTitle>Students List</CardTitle>
             <CardDescription>
@@ -189,12 +191,12 @@ export default function StudentsSection({
               )}
             </CardDescription>
           </div>
-          <div className="flex gap-3 items-center">
+          <div className="flex flex-wrap gap-3 items-center">
             {selectedStudents.size > 0 && (
               <div className="flex gap-2 border-r pr-3">
                 <Dialog open={bulkEditDialogOpen} onOpenChange={setBulkEditDialogOpen}>
                   <DialogTrigger asChild>
-                    <Button variant="outline" size="sm" className="gap-2 border-0 shadow-sm">
+                    <Button variant="soft" size="sm" className="gap-2">
                       <Edit3 className="h-4 w-4" />
                       Change Promotions
                     </Button>
@@ -238,13 +240,13 @@ export default function StudentsSection({
                       </div>
                     </div>
                     <div className="flex justify-end gap-3">
-                      <Button type="button" variant="outline" onClick={() => setBulkEditDialogOpen(false)} className="border-0 shadow-sm">
+                      <Button type="button" variant="soft" onClick={() => setBulkEditDialogOpen(false)}>
                         Cancel
                       </Button>
                       <Button 
                         onClick={handleBulkPromotionEditSubmit} 
                         disabled={bulkPromotionIds.length === 0 || submitLoading}
-                        className="border-0 shadow-sm"
+                        className=""
                       >
                         {submitLoading ? 'Updating...' : 'Update'}
                       </Button>
@@ -254,7 +256,7 @@ export default function StudentsSection({
                 
                 <AlertDialog open={bulkDeleteDialogOpen} onOpenChange={setBulkDeleteDialogOpen}>
                   <AlertDialogTrigger asChild>
-                    <Button variant="outline" size="sm" className="gap-2 text-red-600 hover:text-red-700 border-0 shadow-sm">
+                    <Button variant="soft" size="sm" className="gap-2 text-red-600 hover:text-red-700">
                       <Trash2 className="h-4 w-4" />
                       Delete ({selectedStudents.size})
                     </Button>
@@ -283,18 +285,18 @@ export default function StudentsSection({
             )}
             
             {/* Search bar for students */}
-            <div className="relative">
+            <div className="relative w-full sm:w-auto">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <Input
                 placeholder="Search students..."
                 value={studentSearchTerm}
                 onChange={(e) => setStudentSearchTerm(e.target.value)}
-                className="pl-10 w-64"
+                className="pl-10 w-full sm:w-64"
               />
             </div>
             
             <Select value={selectedPromotion} onValueChange={setSelectedPromotion}>
-              <SelectTrigger className="w-48">
+              <SelectTrigger className="w-full sm:w-48">
                 <Filter className="h-4 w-4 mr-2" />
                 <SelectValue placeholder="Filter by promotion" />
               </SelectTrigger>
@@ -325,7 +327,7 @@ export default function StudentsSection({
                 </DialogHeader>
                 {!editingStudent && !importMode && (
                   <div className="flex gap-2 mb-4">
-                    <Button variant="outline" className="flex-1 border-0 shadow-sm" onClick={handlePickFile}>
+                    <Button variant="soft" className="flex-1" onClick={handlePickFile}>
                       <Upload className="h-4 w-4 mr-2" /> Import CSV/Excel
                     </Button>
                     <Button variant="ghost" onClick={() => downloadTemplate(promotions)} className="gap-1">
@@ -360,9 +362,10 @@ export default function StudentsSection({
         </div>
       </CardHeader>
       <CardContent>
-        <Table>
+        <div className="w-full overflow-x-auto">
+    <Table className="min-w-[720px]">
           <TableHeader>
-            <TableRow className="border-b border-gray-200">
+      <TableRow className="border-b border-border/40">
               <TableHead className="w-12">
                 <Checkbox
                   checked={isAllSelected}
@@ -417,10 +420,10 @@ export default function StudentsSection({
                 <TableCell className="text-right">
                   <div className="flex gap-2 justify-end">
                     <Button 
-                      variant="outline" 
+                      variant="soft" 
                       size="sm"
                       onClick={() => openEditStudentDialog(student)}
-                      className="border-0 shadow-sm"
+                      className=""
                     >
                       <Pencil className="h-4 w-4" />
                     </Button>
@@ -454,7 +457,8 @@ export default function StudentsSection({
               </TableRow>
             ))}
           </TableBody>
-        </Table>
+  </Table>
+  </div>
         
         {filteredStudents.length === 0 && !studentSearchTerm && (
           <div className="text-center py-12">

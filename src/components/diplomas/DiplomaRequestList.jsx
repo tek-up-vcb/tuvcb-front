@@ -2,6 +2,7 @@ import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
+import Skeleton from '../ui/Skeleton';
 import { Calendar, User, Users, MessageSquare, CheckCircle, XCircle, Clock, Plus } from 'lucide-react';
 
 const DiplomaRequestList = ({ 
@@ -24,7 +25,7 @@ const DiplomaRequestList = ({
               <CardDescription>Manage diploma submission requests</CardDescription>
             </div>
             {onCreateNew && (
-              <Button onClick={onCreateNew} className="gap-2">
+              <Button onClick={onCreateNew} variant="soft" className="gap-2">
                 <Plus className="h-4 w-4" />
                 New Request
               </Button>
@@ -32,9 +33,20 @@ const DiplomaRequestList = ({
           </div>
         </CardHeader>
         <CardContent>
-          <div className="text-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-            <p className="mt-2 text-muted-foreground">Loading...</p>
+          <div className="space-y-3">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="p-4 rounded-lg border border-border/70 bg-card">
+                <div className="flex items-center justify-between mb-2">
+                  <Skeleton className="h-5 w-56" />
+                  <div className="flex gap-2">
+                    <Skeleton className="h-8 w-20" />
+                    <Skeleton className="h-8 w-20" />
+                  </div>
+                </div>
+                <Skeleton className="h-4 w-64 mb-2" />
+                <Skeleton className="h-4 w-40" />
+              </div>
+            ))}
           </div>
         </CardContent>
       </Card>
@@ -51,7 +63,7 @@ const DiplomaRequestList = ({
               <CardDescription>Manage diploma submission requests</CardDescription>
             </div>
             {onCreateNew && (
-              <Button onClick={onCreateNew} className="gap-2">
+              <Button onClick={onCreateNew} variant="soft" className="gap-2">
                 <Plus className="h-4 w-4" />
                 New Request
               </Button>
@@ -65,7 +77,7 @@ const DiplomaRequestList = ({
               Create your first request to get started
             </p>
             {onCreateNew && (
-              <Button onClick={onCreateNew} className="mt-4 gap-2">
+              <Button onClick={onCreateNew} variant="soft" className="mt-4 gap-2">
                 <Plus className="h-4 w-4" />
                 Create Request
               </Button>
@@ -174,15 +186,16 @@ const DiplomaRequestList = ({
         </div>
       </CardHeader>
       <CardContent>
-        <div className="space-y-3">
+        <div className="divide-y divide-border/40 rounded-lg overflow-hidden border border-border/40">
           {requests.map(request => (
-            <div key={request.id} className="bg-card border border-0 rounded-lg p-4 hover:bg-muted/50 transition-all duration-200">
+            <div key={request.id} className="bg-card p-4 hover:bg-muted/50 transition-colors">
               {/* Request header */}
               <div className="flex justify-between items-start mb-3">
                 <div>
                   <h3 className="font-semibold text-lg">{request.diploma?.name}</h3>
-                  <p className="text-sm text-muted-foreground">
-                    {request.diploma?.level} - {request.diploma?.field}
+                  <p className="text-sm text-muted-foreground flex flex-wrap gap-2">
+                    <Badge variant="outline">{request.diploma?.level}</Badge>
+                    <span>{request.diploma?.field}</span>
                   </p>
                 </div>
                 <div className="flex gap-2">
@@ -196,11 +209,11 @@ const DiplomaRequestList = ({
 
               {/* Basic information */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
-                <div className="flex items-center gap-2 text-sm text-gray-600">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <User className="h-4 w-4" />
                   <span>Created by: {getUserName(request.createdBy)}</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-gray-600">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Calendar className="h-4 w-4" />
                   <span>On {new Date(request.createdAt).toLocaleDateString('en-US')}</span>
                 </div>
@@ -258,19 +271,19 @@ const DiplomaRequestList = ({
                     <MessageSquare className="h-4 w-4" />
                     <span className="text-sm font-medium">Comment</span>
                   </div>
-                  <p className="text-sm text-muted-foreground bg-muted p-2 rounded border border-border">
+                  <p className="text-sm text-muted-foreground bg-muted p-2 rounded border border-border/60">
                     {request.comment}
                   </p>
                 </div>
               )}
 
               {/* Actions */}
-              <div className="flex gap-2 pt-2 border-t border-border">
+      <div className="flex gap-2 pt-2 border-t border-border/60">
                 {canUserSign(request) && onSign && (
                   <Button
                     size="sm"
                     onClick={() => onSign(request)}
-                    className="bg-blue-500 hover:bg-blue-600"
+        className="bg-blue-500 hover:bg-blue-600"
                   >
                     Sign
                   </Button>

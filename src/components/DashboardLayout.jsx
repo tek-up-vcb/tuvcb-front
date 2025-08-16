@@ -45,7 +45,14 @@ export default function DashboardLayout() {
 	// Persist collapsed state per session (optional, small UX win)
 	useEffect(() => {
 		const saved = sessionStorage.getItem('dashboard.sidebarCollapsed')
-		if (saved != null) setSidebarCollapsed(saved === 'true')
+		if (saved != null) {
+			setSidebarCollapsed(saved === 'true')
+		} else {
+			// Auto-collapse by default on small screens
+			if (window.matchMedia && window.matchMedia('(max-width: 1024px)').matches) {
+				setSidebarCollapsed(true)
+			}
+		}
 	}, [])
 	useEffect(() => {
 		sessionStorage.setItem('dashboard.sidebarCollapsed', String(sidebarCollapsed))
@@ -66,16 +73,25 @@ export default function DashboardLayout() {
 
 	return (
 		<ProtectedRoute requiredRoles={[]}> {/* Auth gate, role handled per page if needed */}
-			<div className="flex min-h-screen">
+			<div className="app-shell-bg flex min-h-screen">
 				{/* Persistent Sidebar */}
 				<DashboardSidebar user={user} isCollapsed={sidebarCollapsed} onToggle={toggleSidebar} />
 
 				{/* Re-open button when collapsed */}
 				<FloatingSidebarToggle onClick={toggleSidebar} isVisible={sidebarCollapsed} />
 
+				{/* Mobile scrim overlay when sidebar is open */}
+				{!sidebarCollapsed && (
+					<div
+						className="fixed inset-0 z-30 bg-black/40 backdrop-blur-[1px] sm:hidden"
+						onClick={toggleSidebar}
+						aria-hidden="true"
+					/>
+				)}
+
 				{/* Right content switches with routes */}
-				<div className={`flex-1 py-8 transition-all duration-300 ${sidebarCollapsed ? 'ml-0' : 'ml-64'}`}>
-					<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+				<div className={`relative z-[1] min-h-screen flex-1 py-6 sm:py-8 transition-all duration-300 ${sidebarCollapsed ? 'ml-16' : 'ml-64'} max-[640px]:ml-0`}>
+					<div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
 						<Outlet context={contextValue} />
 					</div>
 				</div>

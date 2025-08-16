@@ -105,7 +105,7 @@ export default function ManageStudents() {
 
   return (
     <ProtectedRoute requiredRoles={['Admin', 'Teacher']}>
-      <div>
+      <div className="space-y-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Student Management</h1>
           <p className="mt-2 text-gray-600">Manage students and their promotions</p>

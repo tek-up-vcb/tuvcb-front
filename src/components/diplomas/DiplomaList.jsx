@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Edit, Trash2, Plus } from 'lucide-react';
+import Skeleton from '../ui/Skeleton';
 
 const DiplomaList = ({ diplomas, onEdit, onDelete, onCreateNew, loading = false }) => {
   if (loading) {
@@ -12,7 +13,7 @@ const DiplomaList = ({ diplomas, onEdit, onDelete, onCreateNew, loading = false 
           <div className="flex items-center justify-between">
             <CardTitle className="text-lg font-semibold">Available Diplomas</CardTitle>
             {onCreateNew && (
-              <Button onClick={onCreateNew} size="sm" className="flex items-center gap-2">
+              <Button onClick={onCreateNew} size="sm" variant="soft" className="flex items-center gap-2">
                 <Plus className="h-4 w-4" />
                 New Diploma
               </Button>
@@ -20,9 +21,19 @@ const DiplomaList = ({ diplomas, onEdit, onDelete, onCreateNew, loading = false 
           </div>
         </CardHeader>
         <CardContent>
-          <div className="text-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-            <p className="mt-2 text-muted-foreground">Loading...</p>
+          <div className="space-y-3">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="p-4 rounded-lg border border-border/70 bg-card">
+                <div className="flex items-center justify-between mb-2">
+                  <Skeleton className="h-5 w-48" />
+                  <div className="flex gap-2">
+                    <Skeleton className="h-8 w-24" />
+                  </div>
+                </div>
+                <Skeleton className="h-4 w-64 mb-2" />
+                <Skeleton className="h-4 w-40" />
+              </div>
+            ))}
           </div>
         </CardContent>
       </Card>
@@ -61,7 +72,7 @@ const DiplomaList = ({ diplomas, onEdit, onDelete, onCreateNew, loading = false 
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg font-semibold">Available Diplomas ({diplomas.length})</CardTitle>
           {onCreateNew && (
-            <Button onClick={onCreateNew} size="sm" className="flex items-center gap-2">
+            <Button onClick={onCreateNew} size="sm" variant="soft" className="flex items-center gap-2">
               <Plus className="h-4 w-4" />
               New Diploma
             </Button>
@@ -69,9 +80,9 @@ const DiplomaList = ({ diplomas, onEdit, onDelete, onCreateNew, loading = false 
         </div>
       </CardHeader>
       <CardContent>
-        <div className="grid gap-3">
+        <div className="divide-y divide-border/40 rounded-lg overflow-hidden border border-border/40">
           {diplomas.map(diploma => (
-            <div key={diploma.id} className="bg-card border-0 rounded-lg p-4 hover:bg-muted/50 transition-all duration-200">
+            <div key={diploma.id} className="bg-card p-4 hover:bg-muted/50 transition-colors">
               <div className="flex justify-between items-start">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
@@ -81,35 +92,35 @@ const DiplomaList = ({ diplomas, onEdit, onDelete, onCreateNew, loading = false 
                     </Badge>
                   </div>
                   
-                  <div className="flex items-center gap-4 mb-2">
+                  <div className="flex flex-wrap items-center gap-3 mb-2 text-sm">
                     <Badge variant="outline">{diploma.level}</Badge>
-                    <span className="text-sm text-gray-600">{diploma.field}</span>
+                    <span className="text-muted-foreground">{diploma.field}</span>
                   </div>
                   
                   {diploma.description && (
-                    <p className="text-sm text-gray-500 mt-2">{diploma.description}</p>
+                    <p className="text-sm text-muted-foreground mt-2">{diploma.description}</p>
                   )}
                   
-                  <div className="text-xs text-gray-400 mt-2">
+                  <div className="text-xs text-muted-foreground mt-2">
                     Created on {new Date(diploma.createdAt).toLocaleDateString('en-US')}
                   </div>
                 </div>
 
                 {(onEdit || onDelete) && (
                   <div className="flex gap-2 ml-4">
-                    {onEdit && (
+          {onEdit && (
                       <Button
                         size="sm"
-                        variant="outline"
+            variant="soft"
                         onClick={() => onEdit(diploma)}
                       >
                         <Edit className="h-4 w-4" />
                       </Button>
                     )}
-                    {onDelete && (
+          {onDelete && (
                       <Button
                         size="sm"
-                        variant="outline"
+            variant="soft"
                         onClick={() => onDelete(diploma.id)}
                       >
                         <Trash2 className="h-4 w-4" />

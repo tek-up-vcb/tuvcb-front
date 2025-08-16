@@ -39,6 +39,8 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
+import Skeleton from '@/components/ui/Skeleton'
+import EmptyState from '@/components/ui/EmptyState'
 import { Plus, UserCheck, Shield, User, Pencil, Trash2 } from 'lucide-react'
 import AuthService from '@/lib/authService'
 import { useDashboardLayout } from '@/components/DashboardLayout' 
@@ -267,23 +269,38 @@ export default function ManageUsers() {
 
   if (loading) {
     return (
-      <div className="min-h-[60vh] flex items-center justify-center"> 
-        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600"></div> 
+      <div className="space-y-6">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="p-6 rounded-xl border border-border/70 bg-card">
+              <Skeleton className="h-5 w-40 mb-2" />
+              <Skeleton className="h-4 w-64" />
+            </div>
+          ))}
+        </div>
+        <div className="rounded-xl border border-border/70 bg-card p-4">
+          <Skeleton className="h-9 w-full mb-4" />
+          <div className="space-y-2">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <Skeleton key={i} className="h-10 w-full" />
+            ))}
+          </div>
+        </div>
       </div>
     )
   }
 
   return (
     <ProtectedRoute requiredRoles={['Admin']}>
-      <div>
+  <div className="space-y-8">
         <div className="mb-8"> 
           <h1 className="text-3xl font-bold text-gray-900">User Management</h1> 
           <p className="mt-2 text-gray-600">Manage system users and their permissions</p> 
         </div> 
 
-        <Card className="border-0 shadow-sm">
+    <Card>
           <CardHeader>
-            <div className="flex justify-between items-center">
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
               <div>
                 <CardTitle>Users List</CardTitle>
                 <CardDescription>
@@ -295,11 +312,11 @@ export default function ManageUsers() {
                   )}
                 </CardDescription>
               </div>
-              <div className="flex gap-3">
+              <div className="flex flex-wrap gap-3 items-center">
                 {selectedUsers.size > 0 && (
                   <AlertDialog open={bulkDeleteDialogOpen} onOpenChange={setBulkDeleteDialogOpen}>
                     <AlertDialogTrigger asChild>
-                      <Button variant="outline" size="sm" className="gap-2 text-red-600 hover:text-red-700 border-0 shadow-sm">
+                      <Button variant="soft" size="sm" className="gap-2 text-red-600 hover:text-red-700">
                         <Trash2 className="h-4 w-4" />
                         Delete ({selectedUsers.size})
                       </Button>
@@ -328,12 +345,12 @@ export default function ManageUsers() {
                 
                 <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                   <DialogTrigger asChild>
-                    <Button className="gap-2 border-0 shadow-sm" onClick={resetForm}>
+                    <Button className="gap-2" variant="soft" onClick={resetForm}>
                       <Plus className="h-4 w-4" />
                       Add User
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="sm:max-w-[425px] border-0 shadow-lg">
+                  <DialogContent className="sm:max-w-[500px] border-0 shadow-lg">
                     <DialogHeader>
                       <DialogTitle>
                         {editingUser ? 'Edit User' : 'New User'}
@@ -412,10 +429,10 @@ export default function ManageUsers() {
                       </div>
                       
                       <div className="flex justify-end gap-3 pt-4">
-                        <Button type="button" variant="outline" onClick={() => setDialogOpen(false)} className="border-0 shadow-sm">
+                        <Button type="button" variant="soft" onClick={() => setDialogOpen(false)}>
                           Cancel
                         </Button>
-                        <Button type="submit" disabled={submitLoading} className="border-0 shadow-sm">
+                        <Button type="submit" disabled={submitLoading}>
                           {submitLoading ? 'Saving...' : editingUser ? 'Update' : 'Create'}
                         </Button>
                       </div>
@@ -426,9 +443,10 @@ export default function ManageUsers() {
             </div>
           </CardHeader>
           <CardContent>
-            <Table>
+            <div className="w-full overflow-x-auto">
+      <Table className="min-w-[720px]">
               <TableHeader>
-                <TableRow className="border-b border-gray-200">
+        <TableRow className="border-b border-border/40">
                   <TableHead className="w-12">
                     <Checkbox
                       checked={isAllSelected}
@@ -473,10 +491,10 @@ export default function ManageUsers() {
                     <TableCell className="text-right">
                       <div className="flex gap-2 justify-end">
                         <Button 
-                          variant="outline" 
+                          variant="soft" 
                           size="sm"
                           onClick={() => openEditDialog(user)}
-                          className="border-0 shadow-sm"
+                          className=""
                         >
                           <Pencil className="h-4 w-4" />
                         </Button>
@@ -511,15 +529,14 @@ export default function ManageUsers() {
                 ))}
               </TableBody>
             </Table>
+            </div>
             
             {users.length === 0 && (
-              <div className="text-center py-12">
-                <User className="mx-auto h-12 w-12 text-gray-400" />
-                <h3 className="mt-2 text-sm font-semibold text-gray-900">No users</h3>
-                <p className="mt-1 text-sm text-gray-500">
-                  Start by creating your first user.
-                </p>
-              </div>
+              <EmptyState
+                icon={User}
+                title="No users"
+                description="Start by creating your first user."
+              />
             )}
           </CardContent>
         </Card>

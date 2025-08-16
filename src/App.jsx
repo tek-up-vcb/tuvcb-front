@@ -10,6 +10,7 @@ import About from './pages/about'
 import Terms from './pages/terms/index'
 import './App.css'
 import DashboardLayout from '@/components/DashboardLayout'
+import NotFound from '@/pages/not-found'
 
 function App() {
   return (
@@ -29,6 +30,9 @@ function App() {
             <Route path="/manage-students" element={<ManageStudents />} />
             <Route path="/manage-diplomas" element={<ManageDiplomas />} />
           </Route>
+
+          {/* Fallback 404 */}
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>
     </ThemeProvider>
