@@ -20,6 +20,7 @@ export default function ManageStudents() {
     students,
     promotions,
     loading,
+  loadData,
     createStudent,
     updateStudent,
     deleteStudent,
@@ -142,6 +143,7 @@ export default function ManageStudents() {
           onBulkDelete={handleBulkDelete}
           onBulkPromotionEdit={handleBulkPromotionEdit}
           getPromotionBadgeClass={getPromotionBadgeClass}
+          reloadData={loadData}
         />
   </div>
     </ProtectedRoute>

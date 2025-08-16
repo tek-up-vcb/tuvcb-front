@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -41,6 +41,10 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { Filter, UserPlus, Users, Search, GraduationCap, Pencil, Trash2, Edit3 } from 'lucide-react'
 import StudentForm from './StudentForm'
+import { Upload, Download } from 'lucide-react'
+import { parseStudentsFile, downloadTemplate } from '@/utils/parseStudentsFile'
+import studentsService from '@/services/studentsService'
+import BulkImportPreview from './BulkImportPreview'
 
 export default function StudentsSection({
   students,
@@ -59,7 +63,8 @@ export default function StudentsSection({
   onStudentDelete,
   onBulkDelete,
   onBulkPromotionEdit,
-  getPromotionBadgeClass
+  getPromotionBadgeClass,
+  reloadData
 }) {
   const [studentDialogOpen, setStudentDialogOpen] = useState(false)
   const [editingStudent, setEditingStudent] = useState(null)
@@ -67,6 +72,9 @@ export default function StudentsSection({
   const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false)
   const [bulkPromotionIds, setBulkPromotionIds] = useState([])
   const [submitLoading, setSubmitLoading] = useState(false)
+  const [importMode, setImportMode] = useState(false)
+  const [importPreview, setImportPreview] = useState(null) // { parsed, invalid, total }
+  const fileInputRef = useRef(null)
 
   const openEditStudentDialog = (student) => {
     setEditingStudent(student)
@@ -76,6 +84,8 @@ export default function StudentsSection({
   const closeStudentDialog = () => {
     setStudentDialogOpen(false)
     setEditingStudent(null)
+  setImportMode(false)
+  setImportPreview(null)
   }
 
   const handleStudentSubmit = async (studentData) => {
@@ -89,6 +99,48 @@ export default function StudentsSection({
       closeStudentDialog()
     } finally {
       setSubmitLoading(false)
+    }
+  }
+
+  const handlePickFile = () => {
+    fileInputRef.current?.click()
+  }
+
+  const handleFileChange = async (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    try {
+      setSubmitLoading(true)
+      const res = await parseStudentsFile(file)
+      setImportPreview(res)
+      setImportMode(true)
+    } catch (err) {
+      console.error('Erreur import:', err)
+      alert(err.message || 'Erreur lors du parsing du fichier')
+    } finally {
+      setSubmitLoading(false)
+      e.target.value = ''
+    }
+  }
+
+  const handleConfirmOne = async (student) => {
+    // If no studentId, form generation logic creates random; here we pass as-is
+    // Backend requires studentId; rely on UI autogen? We'll autogen minimal here if empty
+    const s = { ...student }
+    if (!s.studentId) {
+      // simple fallback
+      s.studentId = Math.random().toString(36).slice(2, 8).toUpperCase()
+    }
+    // Filter invalid promotionIds by matching with known promotions ids
+    if (Array.isArray(s.promotionIds) && s.promotionIds.length) {
+      const validIds = new Set(promotions.map((p) => p.id))
+      s.promotionIds = s.promotionIds.filter((id) => validIds.has(id))
+    }
+    try {
+      await studentsService.createStudent(s)
+      return { success: true }
+    } catch (e) {
+      return { success: false }
     }
   }
 
@@ -262,22 +314,46 @@ export default function StudentsSection({
                   Add Student
                 </Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-[425px] border-0 shadow-lg">
+              <DialogContent className="sm:max-w-[520px] border-0 shadow-lg">
                 <DialogHeader>
                   <DialogTitle>
                     {editingStudent ? 'Edit Student' : 'New Student'}
                   </DialogTitle>
                   <DialogDescription>
-                    {editingStudent ? 'Edit student information.' : 'Create a new student profile. ID will be auto-generated if left empty.'}
+                    {editingStudent ? 'Edit student information.' : 'Create a new student profile or import multiple students from CSV/Excel.'}
                   </DialogDescription>
                 </DialogHeader>
-                <StudentForm
-                  student={editingStudent}
-                  promotions={promotions}
-                  onSubmit={handleStudentSubmit}
-                  onCancel={closeStudentDialog}
-                  isLoading={submitLoading}
-                />
+                {!editingStudent && !importMode && (
+                  <div className="flex gap-2 mb-4">
+                    <Button variant="outline" className="flex-1 border-0 shadow-sm" onClick={handlePickFile}>
+                      <Upload className="h-4 w-4 mr-2" /> Import CSV/Excel
+                    </Button>
+                    <Button variant="ghost" onClick={() => downloadTemplate(promotions)} className="gap-1">
+                      <Download className="h-4 w-4" /> Template
+                    </Button>
+                    <input ref={fileInputRef} type="file" accept=".csv,.xlsx,.xls" onChange={handleFileChange} className="hidden" />
+                  </div>
+                )}
+
+                {importMode && importPreview ? (
+                  <BulkImportPreview
+                    parsedStudents={importPreview.parsed}
+                    invalidRows={importPreview.invalid}
+                    total={importPreview.total}
+                    promotions={promotions}
+                    onCancel={() => { setImportMode(false); setImportPreview(null) }}
+                    onConfirm={handleConfirmOne}
+                    onDone={() => { reloadData?.(); }}
+                  />
+                ) : (
+                  <StudentForm
+                    student={editingStudent}
+                    promotions={promotions}
+                    onSubmit={handleStudentSubmit}
+                    onCancel={closeStudentDialog}
+                    isLoading={submitLoading}
+                  />
+                )}
               </DialogContent>
             </Dialog>
           </div>
