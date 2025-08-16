@@ -1,11 +1,12 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Check, File, GraduationCap, Lock } from "lucide-react";
+import { ArrowRight, Check, File, GraduationCap, Lock, ShieldCheck, Wallet, Image, Search, FileCheck } from "lucide-react";
 import heroImg from "@/assets/hero.png";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import AuthService from "@/lib/authService";
+import schoolBanner from "@/assets/school.jpg";
 
 export default function HomePage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -106,6 +107,120 @@ export default function HomePage() {
                 </p>
               </div>
             </div>
+          </div>
+        </section>
+        {/* Audience Section */}
+        <section className="w-full max-w-5xl px-4 py-16">
+          <h3 className="text-2xl font-bold text-slate-800 mb-6">Who is it for?</h3>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+            <div className="rounded-lg border-0 bg-white p-6 shadow-sm">
+              <h4 className="mb-2 text-lg font-semibold">Professionals</h4>
+              <p className="text-slate-600 text-sm">
+                Manage your profile, request competency validation, and showcase
+                verifiable achievements to employers worldwide.
+              </p>
+            </div>
+            <div className="rounded-lg border-0 bg-white p-6 shadow-sm">
+              <h4 className="mb-2 text-lg font-semibold">Certifiers</h4>
+              <p className="text-slate-600 text-sm">
+                Evaluate skills, issue tamper-proof digital certifications, and
+                maintain transparent validation records.
+              </p>
+            </div>
+            <div className="rounded-lg border-0 bg-white p-6 shadow-sm">
+              <h4 className="mb-2 text-lg font-semibold">Recruiters</h4>
+              <p className="text-slate-600 text-sm">
+                Search validated profiles, filter by certified skills, and trust
+                credentials at a glance.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* How It Works Section (with school banner background) */}
+        <section
+          className="w-full relative py-16 md:py-20"
+          style={{
+            backgroundImage: `url(${schoolBanner})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center center",
+            backgroundRepeat: "no-repeat",
+            minHeight: "360px",
+          }}
+        >
+          <div className="absolute inset-0 bg-white/80 md:bg-white/70" />
+          <div className="relative mx-auto w-full max-w-5xl px-4">
+            <h3 className="text-2xl font-bold text-slate-800 mb-6">How it works</h3>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+              <div className="rounded-lg border-0 bg-slate-50 p-6 shadow-sm">
+                <Wallet className="mb-3 h-6 w-6 text-blue-700" />
+                <h5 className="font-semibold">1. Connect</h5>
+                <p className="text-sm text-slate-600">Sign in with MetaMask and create your profile.</p>
+              </div>
+              <div className="rounded-lg border-0 bg-slate-50 p-6 shadow-sm">
+                <Search className="mb-3 h-6 w-6 text-blue-700" />
+                <h5 className="font-semibold">2. Validate</h5>
+                <p className="text-sm text-slate-600">Request validation of skills and diplomas.</p>
+              </div>
+              <div className="rounded-lg border-0 bg-slate-50 p-6 shadow-sm">
+                <FileCheck className="mb-3 h-6 w-6 text-blue-700" />
+                <h5 className="font-semibold">3. Certify</h5>
+                <p className="text-sm text-slate-600">Certifiers issue on-chain credentials via smart contracts.</p>
+              </div>
+              <div className="rounded-lg border-0 bg-slate-50 p-6 shadow-sm">
+                <ShieldCheck className="mb-3 h-6 w-6 text-blue-700" />
+                <h5 className="font-semibold">4. Share</h5>
+                <p className="text-sm text-slate-600">Share a verifiable proof link with employers securely.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Key Features Section */}
+        <section className="w-full max-w-5xl px-4 py-16">
+          <h3 className="text-2xl font-bold text-slate-800 mb-6">Key features</h3>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div className="flex items-start gap-3 rounded-lg border-0 bg-white p-5 shadow-sm">
+              <ShieldCheck className="mt-1 h-6 w-6 text-blue-700" />
+              <div>
+                <h5 className="font-semibold">Tamper-proof and transparent</h5>
+                <p className="text-sm text-slate-600">All validations are recorded on blockchain and certificates stored on IPFS.</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3 rounded-lg border-0 bg-white p-5 shadow-sm">
+              <Wallet className="mt-1 h-6 w-6 text-blue-700" />
+              <div>
+                <h5 className="font-semibold">MetaMask integration</h5>
+                <p className="text-sm text-slate-600">Fast, secure wallet-based login for a seamless experience.</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3 rounded-lg border-0 bg-white p-5 shadow-sm">
+              <Image className="mt-1 h-6 w-6 text-blue-700" />
+              <div>
+                <h5 className="font-semibold">AI diploma verification</h5>
+                <p className="text-sm text-slate-600">Verify a diploma using only its photo with built-in AI checks.</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3 rounded-lg border-0 bg-white p-5 shadow-sm">
+              <File className="mt-1 h-6 w-6 text-blue-700" />
+              <div>
+                <h5 className="font-semibold">Portable credentials</h5>
+                <p className="text-sm text-slate-600">Share proof with a link or QR code—instantly verifiable globally.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Trust & Compliance Section */}
+        <section className="w-full bg-slate-50 py-16">
+          <div className="mx-auto w-full max-w-5xl px-4 text-center">
+            <p className="text-sm uppercase tracking-wide text-slate-500">Trust & Compliance</p>
+            <h3 className="mt-2 text-2xl font-bold text-slate-800">Backed by TEK-UP University, Tunisia</h3>
+            <p className="mx-auto mt-3 max-w-3xl text-slate-600">
+              TEK-UP University is approved by the Tunisian Ministry of Higher Education and Scientific
+              Research (MESRS) and authorized to award national engineering degrees in Computer Science
+              and Telecommunications. Our platform extends that academic rigor to the digital world.
+            </p>
           </div>
         </section>
       </main>
