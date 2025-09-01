@@ -127,12 +127,15 @@ export default function HomePage() {
                 maintain transparent validation records.
               </p>
             </div>
-            <div className="rounded-lg border-0 bg-white p-6 shadow-sm">
+            <div className="rounded-lg border-0 bg-white p-6 shadow-sm flex flex-col items-start">
               <h4 className="mb-2 text-lg font-semibold">Recruiters</h4>
-              <p className="text-slate-600 text-sm">
+              <p className="text-slate-600 text-sm mb-4">
                 Search validated profiles, filter by certified skills, and trust
                 credentials at a glance.
               </p>
+              <Button asChild variant="outline" className="border-blue-700 text-blue-700 hover:bg-blue-50 mt-auto">
+                <Link to="/check-diploma">Verify Diploma</Link>
+              </Button>
             </div>
           </div>
         </section>

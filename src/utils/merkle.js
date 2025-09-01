@@ -32,14 +32,19 @@ export function computeMerkleTree(students) {
     tree.push(next);
     level = next;
   }
-  // 3. Proofs (indices des frères à chaque niveau)
+  // 3. Proofs (liste d'objets { hash, position } à chaque niveau)
   const proofs = leaves.map((_, idx) => {
     let proof = [];
     let index = idx;
     for (let l = 0; l < tree.length - 1; l++) {
+      const level = tree[l];
       const sibling = index ^ 1;
-      if (sibling < tree[l].length) {
-        proof.push(tree[l][sibling]);
+      if (sibling < level.length) {
+        const position = (index % 2 === 0) ? 'right' : 'left';
+        proof.push({
+          hash: level[sibling],
+          position,
+        });
       }
       index = Math.floor(index / 2);
     }

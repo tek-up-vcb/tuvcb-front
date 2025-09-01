@@ -94,9 +94,9 @@ export default function DashboardSidebar({ user, isCollapsed = false, onToggle }
 
   const toolItems = [
     {
-      title: 'Check diplomas',
+      title: 'Verify Diploma',
       icon: Award,
-      path: '/check-diplomas'
+      path: '/check-diploma'
     }
   ]
 
