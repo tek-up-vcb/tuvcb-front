@@ -1,14 +1,15 @@
+
 import { Link } from 'react-router-dom'
-import logo from '@/assets/logo.png'
+import notFoundImg from '../assets/404.png'
 
 export default function NotFound() {
   return (
     <main className="min-h-screen flex items-center justify-center p-6">
       <section className="text-center max-w-md">
         <img
-          src={logo}
-          alt="TEK-UP"
-          className="mx-auto mb-6 h-16 w-auto opacity-90"
+          src={notFoundImg}
+          alt="404"
+          className="mx-auto mb-6 h-48 w-auto opacity-90"
         />
         <h1 className="text-5xl font-bold tracking-tight">404</h1>
         <h2 className="text-3xl font-semibold tracking-tight">Page not found</h2>

@@ -278,12 +278,12 @@ const DiplomaRequestList = ({
               )}
 
               {/* Actions */}
-      <div className="flex gap-2 pt-2 border-t border-border/60">
+              <div className="flex gap-2 pt-2 border-t border-border/60">
                 {canUserSign(request) && onSign && (
                   <Button
                     size="sm"
                     onClick={() => onSign(request)}
-        className="bg-blue-500 hover:bg-blue-600"
+                    className="bg-blue-500 hover:bg-blue-600"
                   >
                     Sign
                   </Button>
@@ -299,7 +299,18 @@ const DiplomaRequestList = ({
                   </Button>
                 )}
 
-                {!canUserSign(request) && !canUserDelete(request) && (
+                {/* Ajout du bouton Review si status approved et toutes signatures */}
+                {request.status === 'approved' && request.validSignatures === request.requiredSignatures?.length && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => request.onReview && request.onReview(request)}
+                  >
+                    Review
+                  </Button>
+                )}
+
+                {!canUserSign(request) && !canUserDelete(request) && !(request.status === 'approved' && request.validSignatures === request.requiredSignatures?.length) && (
                   <span className="text-sm text-gray-500 py-1">
                     No actions available
                   </span>

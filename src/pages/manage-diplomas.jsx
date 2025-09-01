@@ -20,6 +20,7 @@ import DiplomaForm from '../components/diplomas/DiplomaForm';
 import DiplomaList from '../components/diplomas/DiplomaList';
 import DiplomaRequestForm from '../components/diplomas/DiplomaRequestForm';
 import DiplomaRequestList from '../components/diplomas/DiplomaRequestList';
+import DiplomaReviewDialog from '../components/diplomas/DiplomaReviewDialog';
 import SignatureDialog from '../components/diplomas/SignatureDialog';
 
 // Import services
@@ -63,8 +64,15 @@ const ManageDiplomas = () => {
   // State for diploma request dialog
   const [requestDialogOpen, setRequestDialogOpen] = useState(false);
 
+
   // State for diploma creation dialog
   const [diplomaDialogOpen, setDiplomaDialogOpen] = useState(false);
+
+  // State pour le modal Review Merkle
+  const [reviewDialog, setReviewDialog] = useState({ isOpen: false, request: null });
+  // Gestion ouverture/fermeture du modal Review
+  const openReviewDialog = (request) => setReviewDialog({ isOpen: true, request });
+  const closeReviewDialog = () => setReviewDialog({ isOpen: false, request: null });
 
   // Current user
   const [currentUser, setCurrentUser] = useState(null);
@@ -366,7 +374,7 @@ const ManageDiplomas = () => {
         <TabsContent value="requests" className="space-y-6">          
           {/* Requests list with header */}
           <DiplomaRequestList
-            requests={diplomaRequests}
+            requests={diplomaRequests.map(r => ({ ...r, onReview: openReviewDialog }))}
             users={users}
             students={students}
             currentUserId={currentUser?.id}
@@ -375,6 +383,13 @@ const ManageDiplomas = () => {
             onCreateNew={openRequestDialog}
             loading={false}
           />
+      {/* Review Merkle dialog */}
+      <DiplomaReviewDialog
+        isOpen={reviewDialog.isOpen}
+        onClose={closeReviewDialog}
+        request={reviewDialog.request}
+        students={students}
+      />
         </TabsContent>
 
         {/* Diplomas Tab */}
