@@ -184,6 +184,23 @@ class DiplomasService {
     }
   }
 
+  async requestAnchor(requestId, batchId, diplomeLabel){
+    const token = localStorage.getItem('auth_token');
+    const r = await fetch(`${API_BASE_URL}/requests/${requestId}/anchor-request`, {
+      method:'POST', headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`}, body: JSON.stringify({batchId, diplomeLabel})
+    });
+    if(!r.ok) throw new Error('Erreur requête ancrage');
+    return r.json();
+  }
+
+  async confirmAnchor(requestId, txHash){
+    const r = await fetch(`${API_BASE_URL}/requests/${requestId}/anchor-confirm`, {
+      method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({txHash})
+    });
+    if(!r.ok) throw new Error('Erreur confirmation ancrage');
+    return r.json();
+  }
+
   /**
    * Récupère les demandes d'un utilisateur spécifique
    * @param {string} userId - ID de l'utilisateur

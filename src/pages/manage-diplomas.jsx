@@ -14,7 +14,7 @@ import {
 import { Award, FileText, Plus } from 'lucide-react';
 
 // Layout context
-import { useDashboardLayout } from '@/components/DashboardLayout';
+// import { useDashboardLayout } from '@/components/DashboardLayout';
 import ProtectedRoute from '../components/ProtectedRoute';
 import DiplomaForm from '../components/diplomas/DiplomaForm';
 import DiplomaList from '../components/diplomas/DiplomaList';
@@ -32,11 +32,8 @@ import AuthService from '../lib/authService';
 
 const ManageDiplomas = () => {
   const navigate = useNavigate();
-  const layout = useDashboardLayout?.() || {}
-  
-  // States for user and UI
-  const [user, setUser] = useState(null);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  // const layout = useDashboardLayout?.() || {}
+
   
   // States for data
   const [diplomas, setDiplomas] = useState([]);
@@ -51,9 +48,7 @@ const ManageDiplomas = () => {
   const [success, setSuccess] = useState(null);
   const [actionLoading, setActionLoading] = useState(false);
 
-  const toggleSidebar = () => {
-    setSidebarCollapsed(!sidebarCollapsed);
-  };
+  // Removed unused sidebar toggle
 
   // States for signature
   const [signatureDialog, setSignatureDialog] = useState({
@@ -89,7 +84,6 @@ const ManageDiplomas = () => {
       try {
         // Load user profile
         const profile = await AuthService.getProfile();
-        setUser(profile);
         setCurrentUser(profile);
         
         // Load other data
@@ -104,24 +98,7 @@ const ManageDiplomas = () => {
     checkAuthAndLoadData();
   }, [navigate]);
 
-  const loadCurrentUser = async () => {
-    try {
-      if (!AuthService.isAuthenticated()) {
-        setCurrentUser(null);
-        return;
-      }
-      
-      const profile = await AuthService.getProfile();
-      console.log('✅ User loaded - wallet:', profile?.walletAddress);
-      console.log('✅ User profile structure:', profile);
-      console.log('✅ User ID:', profile?.id);
-      setCurrentUser(profile);
-    } catch (err) {
-      console.error('❌ Error loading user:', err);
-      setCurrentUser(null);
-      throw err;
-    }
-  };
+  // Removed unused loadCurrentUser function
 
   const loadData = async () => {
     try {
@@ -162,7 +139,7 @@ const ManageDiplomas = () => {
       await diplomasService.createDiploma(diplomaData);
       setSuccess('Diploma created successfully');
       await loadData(); // Reload data
-    } catch (err) {
+    } catch {
       throw new Error('Error creating diploma');
     } finally {
       setActionLoading(false);
@@ -205,7 +182,7 @@ const ManageDiplomas = () => {
       console.log('Request created successfully:', result);
       setSuccess('Diploma request created successfully');
       await loadData(); // Reload data
-    } catch (err) {
+  } catch (err) {
       console.error('Full error details:', err);
       console.error('Error message:', err.message);
       console.error('Error stack:', err.stack);
@@ -225,7 +202,7 @@ const ManageDiplomas = () => {
       await diplomasService.signDiplomaRequest(requestId, signatureData);
       setSuccess('Signature recorded successfully');
       await loadData(); // Reload data
-    } catch (err) {
+    } catch {
       throw new Error('Error during signature');
     } finally {
       setActionLoading(false);
@@ -279,13 +256,8 @@ const ManageDiplomas = () => {
   };
 
   const handleRequestSubmit = async (requestData) => {
-    try {
-      await handleCreateDiplomaRequest(requestData);
-      closeRequestDialog();
-    } catch (error) {
-      // Error is already handled in handleCreateDiplomaRequest
-      throw error;
-    }
+    await handleCreateDiplomaRequest(requestData);
+    closeRequestDialog();
   };
 
   // Diploma dialog management
@@ -298,13 +270,8 @@ const ManageDiplomas = () => {
   };
 
   const handleDiplomaSubmit = async (diplomaData) => {
-    try {
-      await handleCreateDiploma(diplomaData);
-      closeDiplomaDialog();
-    } catch (error) {
-      // Error is already handled in handleCreateDiploma
-      throw error;
-    }
+    await handleCreateDiploma(diplomaData);
+    closeDiplomaDialog();
   };
 
   // Message management
@@ -374,7 +341,9 @@ const ManageDiplomas = () => {
         <TabsContent value="requests" className="space-y-6">          
           {/* Requests list with header */}
           <DiplomaRequestList
-            requests={diplomaRequests.map(r => ({ ...r, onReview: openReviewDialog }))}
+            requests={diplomaRequests
+              .filter(r => !r.anchorTxHash) // masquer ceux déjà ancrés
+              .map(r => ({ ...r, onReview: openReviewDialog }))}
             users={users}
             students={students}
             currentUserId={currentUser?.id}

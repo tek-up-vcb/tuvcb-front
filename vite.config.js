@@ -27,10 +27,11 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: 'http://app.localhost',
+        // En container on résout 'traefik'; en local ajouter host dans /etc/hosts (app.localhost)
+        target: 'http://traefik',
         changeOrigin: true,
-        configure: (proxy, options) => {
-          proxy.on('proxyReq', (proxyReq, req, res) => {
+        configure: (proxy) => {
+          proxy.on('proxyReq', (proxyReq) => {
             proxyReq.setHeader('Host', 'app.localhost');
           });
         }

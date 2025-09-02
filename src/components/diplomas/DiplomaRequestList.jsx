@@ -300,7 +300,7 @@ const DiplomaRequestList = ({
                 )}
 
                 {/* Ajout du bouton Review si status approved et toutes signatures */}
-                {request.status === 'approved' && request.validSignatures === request.requiredSignatures?.length && (
+                {(request.status === 'approved' || request.status === 'ready_for_anchor') && request.validSignatures === request.requiredSignatures?.length && (
                   <Button
                     size="sm"
                     variant="outline"
@@ -310,7 +310,7 @@ const DiplomaRequestList = ({
                   </Button>
                 )}
 
-                {!canUserSign(request) && !canUserDelete(request) && !(request.status === 'approved' && request.validSignatures === request.requiredSignatures?.length) && (
+                {!canUserSign(request) && !canUserDelete(request) && !((request.status === 'approved' || request.status === 'ready_for_anchor') && request.validSignatures === request.requiredSignatures?.length) && (
                   <span className="text-sm text-gray-500 py-1">
                     No actions available
                   </span>

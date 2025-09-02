@@ -27,7 +27,8 @@ import {
   ChevronDown,
   BookOpen,
   PanelLeftClose,
-  PanelLeftOpen
+  PanelLeftOpen,
+  Blocks
 } from 'lucide-react'
 import { ThemeToggleMenuItem } from '@/components/ThemeToggle'
 import AuthService from '@/lib/authService'
@@ -36,7 +37,6 @@ import logo from '@/assets/logo.png'
 export default function DashboardSidebar({ user, isCollapsed = false, onToggle }) {
   const navigate = useNavigate()
   const location = useLocation()
-  
   // Pour les admins, selectedRole permet de voir comme un autre rôle
   // Pour les autres, selectedRole est toujours leur vrai rôle
   const [selectedRole, setSelectedRole] = useState(user?.role || 'Guest')
@@ -76,6 +76,16 @@ export default function DashboardSidebar({ user, isCollapsed = false, onToggle }
         icon: GraduationCap,
         path: '/manage-students'
       }
+      ,{
+        title: 'Blockchain Batches',
+        icon: Award,
+        path: '/blockchain-batches'
+      },
+      {
+        title: 'Manage Contract',
+        icon: Blocks,
+        path: '/manage-contract'
+      },
     ]
 
     switch (role) {
@@ -120,6 +130,8 @@ export default function DashboardSidebar({ user, isCollapsed = false, onToggle }
       case '/manage-diplomas':
       case '/manage-students':
         return userRole === 'Admin' || userRole === 'Teacher'
+      case '/manage-contract':
+        return userRole === 'Admin'
       case '/dashboard':
         return true // Tous les utilisateurs authentifiés peuvent accéder au dashboard
       default:
