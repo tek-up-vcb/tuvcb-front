@@ -13,6 +13,7 @@ import CheckDiplomaPage from './pages/check-diploma';
 import './App.css';
 import DashboardLayout from '@/components/DashboardLayout';
 import NotFound from '@/pages/not-found';
+import AccountSettings from './pages/account-settings';
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
             <Route path="/manage-users" element={<ManageUsers />} />
             <Route path="/manage-students" element={<ManageStudents />} />
             <Route path="/manage-diplomas" element={<ManageDiplomas />} />
+            <Route path="/account-settings" element={<AccountSettings />} />
           </Route>
 
           {/* Fallback 404 */}

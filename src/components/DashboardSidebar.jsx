@@ -353,7 +353,7 @@ export default function DashboardSidebar({ user, isCollapsed = false, onToggle }
                   <DropdownMenuItem onClick={() => navigate('/profile')}>
                     View Profile
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate('/settings')}>
+                  <DropdownMenuItem onClick={() => navigate('/account-settings')}>
                     Account Settings
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
