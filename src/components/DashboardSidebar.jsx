@@ -53,62 +53,81 @@ export default function DashboardSidebar({ user, isCollapsed = false, onToggle }
     navigate('/login')
   }
 
-  // Fonction pour déterminer quels éléments de navigation afficher selon le rôle
-  const getVisibleNavigationItems = (role) => {
-    const allItems = [
-      {
-        title: 'Dashboard',
-        icon: LayoutDashboard,
-        path: '/dashboard'
-      },
-      {
-        title: 'Manage Diplomas',
-        icon: Award,
-        path: '/manage-diplomas'
-      },
-      {
-        title: 'Manage Users',
-        icon: Users,
-        path: '/manage-users'
-      },
-      {
-        title: 'Manage Students',
-        icon: GraduationCap,
-        path: '/manage-students'
-      }
-      ,{
-        title: 'Blockchain Batches',
-        icon: Award,
-        path: '/blockchain-batches'
-      },
-      {
-        title: 'Manage Contract',
-        icon: Blocks,
-        path: '/manage-contract'
-      },
-    ]
 
-    switch (role) {
-      case 'Admin':
-        return allItems // Admin voit tout
-      case 'Teacher':
-        return allItems.filter(item => item.path !== '/manage-users') // Teacher ne voit pas Manage Users
-      case 'Guest':
-        return allItems.filter(item => item.path === '/dashboard') // Guest ne voit que le dashboard
-      default:
-        return allItems.filter(item => item.path === '/dashboard')
-    }
-  }
-
-  const navigationItems = getVisibleNavigationItems(selectedRole)
-
-  const toolItems = [
+  // Nouvelle organisation des sections de navigation
+  const navigationSections = [
     {
-      title: 'Verify Diploma',
-      icon: Award,
-      path: '/check-diploma'
+      key: 'platform',
+      label: 'Platform',
+      items: [
+        {
+          title: 'Dashboard',
+          icon: LayoutDashboard,
+          path: '/dashboard',
+          roles: ['Admin', 'Teacher', 'Guest']
+        }
+      ]
+    },
+    {
+      key: 'manage',
+      label: 'Manage',
+      items: [
+        {
+          title: 'Manage Diplomas',
+          icon: Award,
+          path: '/manage-diplomas',
+          roles: ['Admin', 'Teacher']
+        },
+        {
+          title: 'Manage Users',
+          icon: Users,
+          path: '/manage-users',
+          roles: ['Admin']
+        },
+        {
+          title: 'Manage Students',
+          icon: GraduationCap,
+          path: '/manage-students',
+          roles: ['Admin', 'Teacher']
+        }
+      ]
+    },
+    {
+      key: 'blockchain',
+      label: 'Blockchain',
+      items: [
+        {
+          title: 'Diploma Submission',
+          icon: Award,
+          path: '/diploma-submission',
+          roles: ['Admin', 'Teacher']
+        },
+        {
+          title: 'Manage Contract',
+          icon: Blocks,
+          path: '/manage-contract',
+          roles: ['Admin']
+        }
+      ]
+    },
+    {
+      key: 'tools',
+      label: 'Tools',
+      items: [
+        {
+          title: 'Verify Diploma',
+          icon: Award,
+          path: '/check-diploma',
+          roles: ['Admin', 'Teacher', 'Guest']
+        }
+      ]
     }
   ]
+
+  // Filtrer les items visibles selon le rôle sélectionné
+  const getVisibleSectionItems = (section, role) => {
+    return section.items.filter(item => item.roles.includes(role))
+  }
 
   // Fonction pour déterminer si le sélecteur de rôle doit être affiché
   const shouldShowRoleSelector = () => {
@@ -251,63 +270,40 @@ export default function DashboardSidebar({ user, isCollapsed = false, onToggle }
         </div>
       )}
 
-      {/* Navigation principale - avec scroll */}
-  <div className="flex-1 overflow-y-auto px-2">
-        {/* Section Platform */}
-        <div className="mb-6">
-          {!isCollapsed && (
-            <p className="px-2 mb-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              Platform
-            </p>
-          )}
-          <div className={`space-y-1 ${isCollapsed ? 'flex flex-col items-center gap-2 space-y-0' : ''}`}>
-            {navigationItems.map((item) => {
-              const Icon = item.icon
-              const isActive = isActivePath(item.path)
-              
-              return (
-                <Button
-                  key={item.path}
-                  variant="ghost"
-                  title={isCollapsed ? item.title : undefined}
-                  className={`${isCollapsed ? 'h-10 w-10 p-0 justify-center rounded-md' : 'w-full justify-start px-3 gap-2 h-9 rounded-md'} ${isActive ? 'bg-accent/15 text-foreground' : 'hover:bg-accent/10'} transition-colors`}
-                  onClick={() => handleNavigation(item.path)}
-                >
-                  <Icon className="h-4 w-4" />
-                  {!isCollapsed && <span>{item.title}</span>}
-                </Button>
-              )
-            })}
-          </div>
-        </div>
 
-        {/* Section Tools */}
-        <div className="mb-6">
-          {!isCollapsed && (
-            <p className="px-2 mb-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              Tools
-            </p>
-          )}
-          <div className={`space-y-1 ${isCollapsed ? 'flex flex-col items-center gap-2 space-y-0' : ''}`}>
-            {toolItems.map((item) => {
-              const Icon = item.icon
-              const isActive = isActivePath(item.path)
-              
-              return (
-                <Button
-                  key={item.path}
-                  variant="ghost"
-                  title={isCollapsed ? item.title : undefined}
-                  className={`${isCollapsed ? 'h-10 w-10 p-0 justify-center rounded-md' : 'w-full justify-start px-3 gap-2 h-9 rounded-md'} ${isActive ? 'bg-accent/15 text-foreground' : 'hover:bg-accent/10'} transition-colors`}
-                  onClick={() => navigate(item.path)}
-                >
-                  <Icon className="h-4 w-4" />
-                  {!isCollapsed && <span>{item.title}</span>}
-                </Button>
-              )
-            })}
-          </div>
-        </div>
+      {/* Navigation principale - avec scroll et sections dynamiques */}
+      <div className="flex-1 overflow-y-auto px-2">
+        {navigationSections.map(section => {
+          const visibleItems = getVisibleSectionItems(section, selectedRole)
+          if (visibleItems.length === 0) return null
+          return (
+            <div className="mb-6" key={section.key}>
+              {!isCollapsed && (
+                <p className="px-2 mb-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  {section.label}
+                </p>
+              )}
+              <div className={`space-y-1 ${isCollapsed ? 'flex flex-col items-center gap-2 space-y-0' : ''}`}>
+                {visibleItems.map(item => {
+                  const Icon = item.icon
+                  const isActive = isActivePath(item.path)
+                  return (
+                    <Button
+                      key={item.path}
+                      variant="ghost"
+                      title={isCollapsed ? item.title : undefined}
+                      className={`${isCollapsed ? 'h-10 w-10 p-0 justify-center rounded-md' : 'w-full justify-start px-3 gap-2 h-9 rounded-md'} ${isActive ? 'bg-accent/15 text-foreground' : 'hover:bg-accent/10'} transition-colors`}
+                      onClick={() => handleNavigation(item.path)}
+                    >
+                      <Icon className="h-4 w-4" />
+                      {!isCollapsed && <span>{item.title}</span>}
+                    </Button>
+                  )
+                })}
+              </div>
+            </div>
+          )
+        })}
       </div>
 
       {/* Section inférieure */}

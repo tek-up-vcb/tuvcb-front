@@ -219,6 +219,15 @@ class UsersService {
       throw error;
     }
   }
+
+  /**
+   * KPIs utilisateurs
+   */
+  async getKpi() {
+    const r = await fetch(`${API_BASE_URL}/kpi`);
+    if(!r.ok) throw new Error('Erreur KPI users');
+    return r.json();
+  }
 }
 
 // Export d'une instance unique

@@ -8,7 +8,7 @@ import ManageUsers from './pages/manage-users';
 import ManageStudents from './pages/manage-students';
 import ManageDiplomas from './pages/manage-diplomas';
 import ManageContract from './pages/manage-contract';
-import BlockchainBatchesPage from './pages/blockchain-batches';
+import DiplomaSubmissionPage from './pages/diploma-submission';
 import About from './pages/about';
 import Terms from './pages/terms/index';
 import CheckDiplomaPage from './pages/check-diploma';
@@ -38,7 +38,7 @@ function App() {
             <Route path="/manage-students" element={<ManageStudents />} />
             <Route path="/manage-diplomas" element={<ManageDiplomas />} />
             <Route path="/manage-contract" element={<ManageContract />} />
-            <Route path="/blockchain-batches" element={<BlockchainBatchesPage />} />
+            <Route path="/diploma-submission" element={<DiplomaSubmissionPage />} />
             <Route path="/account-settings" element={<AccountSettings />} />
           </Route>
 

@@ -225,6 +225,24 @@ class DiplomasService {
       throw error;
     }
   }
+
+  /**
+   * KPIs diplômes (templates & demandes)
+   */
+  async getKpiMetrics() {
+    const r = await fetch(`${API_BASE_URL}/kpi/metrics/all`);
+    if(!r.ok) throw new Error('Erreur KPI diplomas');
+    return r.json();
+  }
+
+  /**
+   * Nombre étudiants diplômés (distinct)
+   */
+  async getGraduatedStudentsCount() {
+    const r = await fetch(`${API_BASE_URL}/kpi/graduated-students`);
+    if(!r.ok) throw new Error('Erreur KPI diplômés');
+    return r.json();
+  }
 }
 
 export default new DiplomasService();

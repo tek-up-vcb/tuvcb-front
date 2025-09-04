@@ -295,6 +295,15 @@ class StudentsService {
       throw error;
     }
   }
+
+  /**
+   * KPIs étudiants
+   */
+  async getKpi() {
+    const r = await fetch(`${API_BASE_URL}/kpi`);
+    if(!r.ok) throw new Error('Erreur KPI étudiants');
+    return r.json();
+  }
 }
 
 // Export d'une instance unique
