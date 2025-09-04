@@ -1,153 +1,113 @@
 
-import { useState, useEffect } from 'react';
-import { keccak256 } from 'js-sha3';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
+import { useState } from 'react';
+import { ShieldCheck, RefreshCcw, Hash, FileText } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import { ArrowLeft, ShieldCheck } from 'lucide-react';
-import AuthService from '@/lib/authService';
-import { useNavigate } from 'react-router-dom';
+
+// Nouvelle page de vérification simplifiée (plus de Merkle root / proof)
+// Deux modes: par hash direct OU en collant le JSON complet du diplôme (tel qu'émis en review)
+// Appelle backend: POST /api/blockchain/registry/verify-diploma
 
 export default function CheckDiplomaPage() {
-  const [root, setRoot] = useState('');
+  const [mode, setMode] = useState('hash'); // 'hash' | 'json'
   const [hash, setHash] = useState('');
-  const [proof, setProof] = useState('');
-  const [result, setResult] = useState(null);
-  const [error, setError] = useState(null);
+  const [json, setJson] = useState('');
   const [loading, setLoading] = useState(false);
-  // const [isAuthenticated, setIsAuthenticated] = useState(false); // unused
-  const navigate = useNavigate();
+  const [error, setError] = useState(null);
+  const [result, setResult] = useState(null);
 
-  // useEffect(() => {
-  //   setIsAuthenticated(AuthService.isAuthenticated());
-  // }, []);
-
-  const handleReset = () => {
-    setRoot('');
-    setHash('');
-    setProof('');
-    setResult(null);
-    setError(null);
+  const resetAll = () => {
+    setHash(''); setJson(''); setError(null); setResult(null);
   };
 
-  const handleVerify = () => {
-    setError(null);
-    setResult(null);
-    setLoading(true);
-    let parsedProof = [];
-    try {
-      parsedProof = JSON.parse(proof);
-      if (!Array.isArray(parsedProof)) throw new Error();
-    } catch {
-  setError('Invalid Merkle proof (expected JSON array)');
-      setLoading(false);
-      return;
-    }
-    let current = hash.trim();
-    for (const step of parsedProof) {
-      if (step.position === 'left') {
-        current = keccak256(step.hash + current);
-      } else if (step.position === 'right') {
-        current = keccak256(current + step.hash);
-      } else {
-  setError('Invalid proof step: missing or invalid position');
-        setLoading(false);
-        return;
+  async function handleVerify(e) {
+    e.preventDefault();
+    setError(null); setResult(null); setLoading(true);
+    let body;
+    if (mode === 'hash') {
+      if (!hash.trim()) { setError('Hash requis'); setLoading(false); return; }
+      body = { hash: hash.trim() };
+    } else {
+      if (!json.trim()) { setError('JSON requis'); setLoading(false); return; }
+      try {
+        body = { diploma: JSON.parse(json) };
+      } catch {
+        setError('JSON invalide'); setLoading(false); return;
       }
     }
-    if (current === root.trim()) {
-      setResult('Diploma is valid (Merkle proof verified)');
-    } else {
-      setResult('Diploma is invalid (incorrect Merkle proof)');
+    try {
+      const r = await fetch('/api/blockchain/registry/verify-diploma', {
+        method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body)
+      });
+      if(!r.ok) throw new Error('Erreur HTTP '+r.status);
+      const data = await r.json();
+      setResult(data);
+    } catch(err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
-  };
+  }
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50">
-      <Header />
-      <main className="flex-1 flex flex-col items-center justify-center py-8">
-        <section className="w-full max-w-lg bg-white rounded shadow p-6">
-          <button
-            className="mb-4 flex items-center text-slate-600 hover:text-slate-900"
-            type="button"
-            onClick={() => navigate(-1)}
-          >
-            <ArrowLeft className="w-4 h-4 mr-1" /> Back
-          </button>
-          <h1 className="text-2xl font-bold mb-2 flex items-center gap-2">
-            <ShieldCheck className="w-6 h-6 text-green-600" /> Check a diploma
-          </h1>
-          <p className="mb-6 text-slate-600">Verify the authenticity of a diploma using a Merkle proof.</p>
-          <form className="space-y-4" onSubmit={e => { e.preventDefault(); handleVerify(); }}>
-            <div>
-              <label htmlFor="merkle-root" className="block text-sm font-medium text-slate-700 mb-1">Merkle Root</label>
-              <Input
-                id="merkle-root"
-                placeholder="e.g. 0x..."
-                value={root}
-                onChange={e => setRoot(e.target.value)}
-                autoComplete="off"
-                spellCheck={false}
-              />
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center py-10 px-4">
+      <div className="w-full max-w-xl bg-white border border-slate-200 rounded-xl shadow-sm p-6 space-y-6">
+        <div className="flex items-center gap-2">
+          <ShieldCheck className="w-7 h-7 text-emerald-600" />
+          <h1 className="text-xl font-semibold tracking-tight">Vérifier un diplôme</h1>
+        </div>
+        <p className="text-sm text-slate-600 leading-relaxed">Entrez soit directement le hash on-chain du diplôme, soit collez l'objet JSON complet du diplôme pour calculer son empreinte et vérifier sa présence dans les events blockchain.</p>
+
+        <div className="flex gap-2 text-sm font-medium">
+          <button type="button" onClick={() => { setMode('hash'); resetAll(); }} className={`flex-1 rounded-md border px-3 py-2 flex items-center justify-center gap-1 transition ${mode==='hash' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white hover:bg-slate-50 border-slate-300 text-slate-700'}`}> <Hash className="w-4 h-4"/> Par hash</button>
+          <button type="button" onClick={() => { setMode('json'); resetAll(); }} className={`flex-1 rounded-md border px-3 py-2 flex items-center justify-center gap-1 transition ${mode==='json' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white hover:bg-slate-50 border-slate-300 text-slate-700'}`}> <FileText className="w-4 h-4"/> Par JSON</button>
+        </div>
+
+        <form onSubmit={handleVerify} className="space-y-4">
+          {mode === 'hash' && (
+            <div className="space-y-1">
+              <label className="text-xs font-medium text-slate-600">Hash du diplôme (0x...)</label>
+              <Input value={hash} onChange={e=>setHash(e.target.value)} placeholder="0x..." spellCheck={false} autoComplete="off" />
             </div>
-            <div>
-              <label htmlFor="diploma-hash" className="block text-sm font-medium text-slate-700 mb-1">Diploma Hash</label>
-              <Input
-                id="diploma-hash"
-                placeholder="e.g. 0x..."
-                value={hash}
-                onChange={e => setHash(e.target.value)}
-                autoComplete="off"
-                spellCheck={false}
-              />
+          )}
+          {mode === 'json' && (
+            <div className="space-y-1">
+              <label className="text-xs font-medium text-slate-600">Objet JSON du diplôme</label>
+              <Textarea value={json} onChange={e=>setJson(e.target.value)} rows={8} spellCheck={false} className="font-mono text-xs" placeholder='{"studentId":"...","diploma":{...}}' />
+              <p className="text-[11px] text-slate-500">Le hash calculé sera keccak256(JSON.stringify(objet)) côté serveur.</p>
             </div>
-            <div>
-              <label htmlFor="merkle-proof" className="block text-sm font-medium text-slate-700 mb-1">Merkle Proof (JSON array)</label>
-              <Textarea
-                id="merkle-proof"
-                value={proof}
-                onChange={e => setProof(e.target.value)}
-                rows={6}
-                spellCheck={false}
-              />
-              <div className="text-xs text-slate-500 mt-1">
-                Expected format: JSON array of objects <code>{'{ hash, position }'}</code>.<br />
-                Example:<br />
-                <pre className="bg-slate-100 rounded p-2 overflow-x-auto">[
-  {'{'}"hash": "...", "position": "right"{'}'},
-  {'{'}"hash": "...", "position": "left"{'}'}
-]</pre>
-              </div>
+          )}
+          <div className="flex gap-2">
+            <Button type="submit" disabled={loading}>{loading ? 'Vérification...' : 'Vérifier'}</Button>
+            <Button type="button" variant="outline" onClick={resetAll} className="flex items-center gap-1"><RefreshCcw className="w-4 h-4"/> Reset</Button>
+          </div>
+        </form>
+
+        {error && (
+          <Alert variant="destructive">
+            <AlertTitle>Erreur</AlertTitle>
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
+
+        {result && !error && (
+          <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm space-y-2">
+            <div className="flex items-center gap-2">
+              {result.found ? <span className="text-emerald-600 font-semibold">Diplôme trouvé ✅</span> : <span className="text-rose-600 font-semibold">Diplôme non trouvé ❌</span>}
             </div>
-            {error && (
-              <Alert variant="destructive">
-                <AlertTitle>Error</AlertTitle>
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
+            <div><span className="font-medium text-slate-600">Hash:</span> <code className="break-all text-slate-800">{result.hash}</code></div>
+            <div><span className="font-medium text-slate-600">Occurrences:</span> {result.occurrences}</div>
+            {result.firstEvent && (
+              <details className="mt-2">
+                <summary className="cursor-pointer text-slate-600 hover:text-slate-800">Voir premier event</summary>
+                <pre className="mt-2 text-xs bg-white border rounded p-2 max-h-60 overflow-auto">{JSON.stringify(result.firstEvent, null, 2)}</pre>
+              </details>
             )}
-            {result && (
-              <Alert variant="success">
-                <AlertTitle>Result</AlertTitle>
-                <AlertDescription>{result}</AlertDescription>
-              </Alert>
-            )}
-            <div className="flex gap-2 mt-4">
-              <Button type="submit" disabled={loading}>
-                Verify
-              </Button>
-              <Button type="button" variant="outline" onClick={handleReset}>
-                Reset
-              </Button>
-            </div>
-          </form>
-        </section>
-      </main>
-      <Footer />
+          </div>
+        )}
+      </div>
     </div>
   );
 }
