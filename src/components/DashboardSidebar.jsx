@@ -119,6 +119,12 @@ export default function DashboardSidebar({ user, isCollapsed = false, onToggle }
           icon: Award,
           path: '/check-diploma',
           roles: ['Admin', 'Teacher', 'Guest']
+        },
+        {
+          title: 'Historique des actions',
+          icon: Award,
+          path: '/historique-action',
+          roles: ['Admin']
         }
       ]
     }

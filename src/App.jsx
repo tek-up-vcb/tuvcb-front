@@ -16,6 +16,7 @@ import './App.css';
 import DashboardLayout from '@/components/DashboardLayout';
 import NotFound from '@/pages/not-found';
 import AccountSettings from './pages/account-settings';
+import HistorqueDesActions from './pages/historique-des-actions';
 
 function App() {
   return (
@@ -40,6 +41,7 @@ function App() {
             <Route path="/manage-contract" element={<ManageContract />} />
             <Route path="/diploma-submission" element={<DiplomaSubmissionPage />} />
             <Route path="/account-settings" element={<AccountSettings />} />
+            <Route path="/historique-action" element={<HistorqueDesActions />} />
           </Route>
 
           {/* Fallback 404 */}
