@@ -1,4 +1,3 @@
-// src/pages/HistoriqueDesActions.jsx
 import { useEffect, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
@@ -12,8 +11,10 @@ import {
 import { Badge } from '@/components/ui/badge'
 import EmptyState from '@/components/ui/EmptyState'
 import Skeleton from '@/components/ui/Skeleton'
+import { mockFetchBacklogs } from '../mock/backklog'
+const USE_MOCKS = false // basculer entre mock et API réelle
 
-const HistoriqueDesActions = () => {
+export default function HistoriqueDesActions() {
   const [data, setData] = useState([])
   const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(true)
@@ -24,15 +25,26 @@ const HistoriqueDesActions = () => {
     const load = async () => {
       setLoading(true)
       try {
-        // Utilise le proxy /api du front (cohérent avec les autres pages)
-        const res = await fetch(`/api/backlogs?limit=${pageSize}&offset=${(page - 1) * pageSize}`)
-        const json = await res.json()
+        const offset = (page - 1) * pageSize
+        let json
+
+        if (USE_MOCKS) {
+          // Utilise le mock local
+          json = await mockFetchBacklogs({ limit: pageSize, offset })
+        } else {
+          // Appel réel API (Traefik/proxy front)
+          const res = await fetch(`/api/backlogs?limit=${pageSize}&offset=${offset}`)
+          json = await res.json()
+        }
+
         setData(Array.isArray(json.items) ? json.items : [])
         setTotal(typeof json.total === 'number' ? json.total : 0)
       } catch (e) {
-        console.error('Erreur de chargement des backlogs:', e)
-        setData([])
-        setTotal(0)
+        console.error('Erreur backlogs:', e)
+        // En cas d’erreur réseau, fallback sur les mocks pour ne pas bloquer l’UI
+        const json = await mockFetchBacklogs({ limit: pageSize, offset: (page - 1) * pageSize })
+        setData(json.items)
+        setTotal(json.total)
       } finally {
         setLoading(false)
       }
@@ -52,10 +64,7 @@ const HistoriqueDesActions = () => {
           {loading ? (
             <Skeleton className="h-32 w-full" />
           ) : data.length === 0 ? (
-            <EmptyState
-              title="Aucune action trouvée"
-              description="Il n'y a pas encore d'historique."
-            />
+            <EmptyState title="Aucune action trouvée" description="Il n'y a pas encore d'historique." />
           ) : (
             <div className="space-y-2">
               <Table>
@@ -74,11 +83,7 @@ const HistoriqueDesActions = () => {
                     <TableRow key={item.id}>
                       <TableCell>{item.id}</TableCell>
                       <TableCell>
-                        {item.user_id != null ? (
-                          item.user_id
-                        ) : (
-                          <Badge variant="secondary">anonyme</Badge>
-                        )}
+                        {item.user_id != null ? item.user_id : <Badge variant="secondary">anonyme</Badge>}
                       </TableCell>
                       <TableCell>{item.action_type}</TableCell>
                       <TableCell className="max-w-xs truncate" title={item.action_description}>
@@ -97,9 +102,7 @@ const HistoriqueDesActions = () => {
                         )}
                       </TableCell>
                       <TableCell>
-                        {item.created_at
-                          ? new Date(item.created_at).toLocaleString()
-                          : '—'}
+                        {item.created_at ? new Date(item.created_at).toLocaleString() : '—'}
                       </TableCell>
                     </TableRow>
                   ))}
@@ -136,5 +139,3 @@ const HistoriqueDesActions = () => {
     </div>
   )
 }
-
-export default HistoriqueDesActions
